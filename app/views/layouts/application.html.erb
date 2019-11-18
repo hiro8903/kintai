@@ -5,9 +5,14 @@
     <%= csrf_meta_tags %>
     <%= stylesheet_link_tag    'application', media: 'all','data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application','data-turbolinks-track': 'reload' %>
+    <!--HTML shimが以下の1行で収まる  定義したパーシャルを呼び出している-->
+    <%= render 'layouts/shim' %>
   </head>
-
   <body>
-    <%= yield %>
+    <!-- headerの内容が以下の1行で収まる   定義したパーシャルを呼び出している-->
+    <%= render 'layouts/header' %>
+    <div class="container">
+      <%= yield %>
+    </div>
   </body>
 </html>
