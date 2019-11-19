@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
-  # get 'static_pages/top'  「$ rails generate controller StaticPages top 」で自動生成されたルーティング
-  root 'static_pages#top'
+  
+=begin
+  「rails g コマンドで自動生成されたルーティング」
+    get 'users/new'
+    get 'static_pages/top' 
+=end
 
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root 'static_pages#top'
+  get '/signup', to: 'users#new'
+  
 end
