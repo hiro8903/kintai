@@ -13,6 +13,8 @@
     <%= render 'layouts/header' %>
     <div class="container">
       <%= yield %>
+      <!--開発環境のみデバッグ情報を表示される-->
+      <%= debug(params) if Rails.env.development? %>
     </div>
   </body>
 </html>
