@@ -3,17 +3,19 @@
   <head>
     <title><%= full_title(yield(:title)) %></title>
     <%= csrf_meta_tags %>
-    <%= stylesheet_link_tag    'application', media: 'all','data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application','data-turbolinks-track': 'reload' %>
-    <!--HTML shimが以下の1行で収まる  定義したパーシャルを呼び出している-->
+    <%= stylesheet_link_tag    'application', media: 'all',
+                               'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application',
+                               'data-turbolinks-track': 'reload' %>
     <%= render 'layouts/shim' %>
   </head>
   <body>
-    <!-- headerの内容が以下の1行で収まる   定義したパーシャルを呼び出している-->
     <%= render 'layouts/header' %>
     <div class="container">
+      <% flash.each do |message_type, msg| %>
+        <div class="alert alert-<%= message_type %>"><%= msg %></div>
+      <% end %>
       <%= yield %>
-      <!--開発環境のみデバッグ情報を表示される-->
       <%= debug(params) if Rails.env.development? %>
     </div>
   </body>
