@@ -1,12 +1,18 @@
 Rails.application.routes.draw do
-  
 =begin
   「rails g コマンドで自動生成されたルーティング」
     get 'users/new'
     get 'static_pages/top' 
+    get 'sessions/new'
 =end
 
-  root 'static_pages#top'
-  get '/signup', to: 'users#new'
+  root 'static_pages#top'  # トップページ表示
+  get '/signup', to: 'users#new'  # ユーザー作成ページ表示
+
+  # ログイン機能
+  get    '/login', to: 'sessions#new' # ログインページ表示
+  post   '/login', to: 'sessions#create'  # セッション作成（ログイン）
+  delete '/logout', to: 'sessions#destroy'  # セッション削除（ログアウト）
+
   resources :users
 end
