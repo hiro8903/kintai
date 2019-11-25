@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191119160626) do
+ActiveRecord::Schema.define(version: 20191125211508) do
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20191119160626) do
     t.datetime "work_time", default: "2019-11-21 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "remember_digest"
   end
 
 end
