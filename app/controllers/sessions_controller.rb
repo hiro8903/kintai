@@ -9,8 +9,8 @@ class SessionsController < ApplicationController
       # ログイン後にユーザー情報ページにリダイレクトする。
       log_in user
       # チェックボックスがオンの時（"remember_me" => "1"）ユーザー情報を記憶します。オフの場合は記憶しません。
-      rparams[:session][:remember_me] == '1' ? remember(user) : forget(user)
-      redirect_to user
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+      redirect_back_or user
     else
       flash.now[:danger] = '認証に失敗しました。'
       render :new

@@ -1,17 +1,17 @@
 module SessionsHelper
-  
+
   # 引数に渡されたユーザーオブジェクトでログインします。
   def log_in(user)
-    session[:user_id] = user.id # session[:user_id]は任意の変数名。sessionにuser_idがあるわけではない
+    session[:user_id] = user.id
   end
-  
-  # 永続的セッションを記憶します（Userモデルを参照）
+
+   # 永続的セッションを記憶します（Userモデルを参照）
   def remember(user)
     user.remember
     cookies.permanent.signed[:user_id] = user.id
     cookies.permanent[:remember_token] = user.remember_token
   end
-  
+
   # 永続的セッションを破棄します
   def forget(user)
     user.forget # Userモデル参照
@@ -25,18 +25,7 @@ module SessionsHelper
     session.delete(:user_id)
     @current_user = nil
   end
-  
-=begin
-  #  Remember Me 機能対応前のcurrent_userメソッド
-  # 現在ログイン中のユーザーがいる場合オブジェクトを返します。
-  def current_user
-    if session[:user_id]
-      @current_user ||= User.find_by(id: session[:user_id])
-    end
-  end
-=end
 
-  #  Remember Me 機能対応後のcurrent_userメソッド
   # 一時的セッションにいるユーザーを返します。
   # それ以外の場合はcookiesに対応するユーザーを返します。
   def current_user
@@ -51,9 +40,24 @@ module SessionsHelper
     end
   end
 
+  # 渡されたユーザーがログイン済みのユーザーであればtrueを返します。
+  def current_user?(user)
+    user == current_user
+  end
+
   # 現在ログイン中のユーザーがいればtrue、そうでなければfalseを返します。
   def logged_in?
     !current_user.nil?
   end
-  
+
+  # 記憶しているURL(またはデフォルトURL)にリダイレクトします。
+  def redirect_back_or(default_url)
+    redirect_to(session[:forwarding_url] || default_url)
+    session.delete(:forwarding_url)
+  end
+
+  # アクセスしようとしたURLを記憶します。
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
+  end
 end
