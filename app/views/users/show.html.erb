@@ -24,7 +24,7 @@
     </tr>
   </table>
 </div>
-
+<%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
@@ -78,6 +78,7 @@
             <% end %>
           </td>
           <td><!-- 備考 -->
+            <%= day.note %>
           </td>
         </tr>
       <% end %>
