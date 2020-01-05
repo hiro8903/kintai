@@ -69,5 +69,15 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
   
+  # ページ出力前に1週間分のデータの存在を確認・セットします。
+  def set_one_week 
+    @first_day_of_week = params[:date].nil? ?
+    Date.current.beginning_of_week(:monday) : params[:date].to_date
+    @last_day_of_week = @first_day_of_week.end_of_week(:monday)
+    @attendances_of_week = @user.attendances.where(worked_on: @first_day_of_week..@last_day_of_week).order(:worked_on)
+
+  end
+
+  
 
 end
