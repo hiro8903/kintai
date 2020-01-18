@@ -53,7 +53,7 @@
           <td><!-- 日付 -->
             <%= l(day.worked_on, format: :short) %>
           </td>
-          <td><!-- 曜日 -->
+          <td class="<%= "wday#{day.worked_on.wday}"%>"><!-- 曜日 -->
             <%= $days_of_the_week[day.worked_on.wday] %>
           </td>
           <td><!-- 勤怠登録ボタン-->
