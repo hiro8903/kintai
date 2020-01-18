@@ -19,5 +19,20 @@ module AttendancesHelper
   def basic_times_sum(basic_time, worked_sum)
     format_basic_info(basic_time).to_f * worked_sum
   end
+  
+  # 出勤時間または退勤時間だけになる編集は無効
+  def attendances_update_only_one_side?
+    attendances = true
+    attendances_params.each do |id, item|
+      if item[:started_at].blank? && item[:finished_at].blank?
+        next
+      elsif item[:started_at].blank? || item[:finished_at].blank?
+        attendances = false
+        flash[:danger] = "出勤時間または退勤時間だけになる編集はできません。"
+        redirect_to attendances_edit_user_url(date: params[:date])
+      end
+    end
+    return attendances
+  end
 
 end
