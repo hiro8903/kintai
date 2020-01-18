@@ -96,3 +96,12 @@ p {
     color: $state-danger-text;
   }
 }
+
+// 勤怠情報の曜日の色
+.wday0 {
+  color: red;
+}
+
+.wday6 {
+  color: blue;
+}
