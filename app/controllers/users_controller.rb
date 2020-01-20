@@ -6,8 +6,18 @@ class UsersController < ApplicationController
   before_action :admin_or_correct_user, only: [:show, :edit]
   before_action :set_one_month, only: [:show, :show_one_week]
   before_action :set_one_week , only: :show_one_week
+  
   def index
-    @users = User.paginate(page: params[:page])
+ 
+    #キーワードが入力されていれば、whereメソッドとLIKE検索（部分一致検索）を組み合わせて、必要な情報のみ取得する。
+    if params[:user_search]
+      @users = User.where('name LIKE ?', "%#{params[:user_search]}%").paginate(page: params[:page])
+      @page_title ="検索結果"
+    else
+      @users = User.paginate(page: params[:page])
+      @page_title ="ユーザー一覧"
+    end
+    
   end
 
   def show
