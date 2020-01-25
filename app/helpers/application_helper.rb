@@ -9,5 +9,5 @@ module ApplicationHelper
       page_name + " | " + base_title # falseの場合（page_nameに何か入っている場合）の処理
     end
   end
-  
+
 end

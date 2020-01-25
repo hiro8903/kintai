@@ -25,7 +25,7 @@
   </table>
 </div>
 <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
-<%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>
+<!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
 
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
@@ -65,13 +65,13 @@
             <%= l(day.started_at, format: :hour) if day.started_at.present? %>
           </td>
           <td><!-- 出社ー分 -->
-            <%= l(day.started_at, format: :min) if day.started_at.present? %>
+            <%= every_15_minutes(day.started_at) if day.started_at.present? %>
           </td>
           <td><!-- 退社ー時間 -->
             <%= l(day.finished_at, format: :hour) if day.finished_at.present? %>
           </td>
           <td><!-- 退社ー分 -->
-            <%= l(day.finished_at, format: :min) if day.finished_at.present? %>
+            <%= every_15_minutes(day.finished_at) if day.finished_at.present? %>
           </td>
           <td><!-- 在社時間-->
             <% if day.started_at.present? && day.finished_at.present? %>
