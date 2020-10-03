@@ -5,8 +5,8 @@ one:
   email: MyString
   password_digest: MyString
   admin: false
-  department: MyString
-  basic_time: 2019-11-19 16:06:26
+  affiliation: MyString
+  basic_work_time: 2019-11-19 16:06:26
   work_time: 2019-11-19 16:06:26
 
 two:
@@ -14,6 +14,6 @@ two:
   email: MyString
   password_digest: MyString
   admin: false
-  department: MyString
-  basic_time: 2019-11-19 16:06:26
+  affiliation: MyString
+  basic_work_time: 2019-11-19 16:06:26
   work_time: 2019-11-19 16:06:26

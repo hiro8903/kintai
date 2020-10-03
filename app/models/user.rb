@@ -14,8 +14,8 @@ class User < ApplicationRecord
   validates :email, presence: true, length: { maximum: 100 },
                     format: { with: VALID_EMAIL_REGEX }, # formatというオプション
                     uniqueness: true
-  validates :department, length: { in: 2..50 }, allow_blank: true
-  validates :basic_time, presence: true
+  validates :affiliation, length: { in: 2..50 }, allow_blank: true
+  validates :basic_work_time, presence: true
   validates :work_time, presence: true
   # has_secure_password は入力されたパスワードをそのままの文字列ではなく、
   # ハッシュ化（入力されたデータ（パスワード）を元に戻せないデータにする処理）

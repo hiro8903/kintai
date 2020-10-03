@@ -23,8 +23,8 @@ module AttendancesHelper
   end
   
   # 総合勤務時間（基本時間　×　出勤日数）
-  def basic_times_sum(basic_time, worked_sum)
-    format_basic_info(basic_time).to_f * worked_sum
+  def basic_work_times_sum(basic_work_time, worked_sum)
+    format_basic_info(basic_work_time).to_f * worked_sum
   end
   
   # 出勤時間または退勤時間だけになる編集は無効
