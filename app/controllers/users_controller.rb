@@ -78,11 +78,11 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password, :department, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :affiliation, :password_confirmation)
     end
     
     def basic_info_params
-      params.require(:user).permit(:basic_time, :work_time)
+      params.require(:user).permit(:basic_work_time, :work_time)
     end
     
     # 管理権限者、または現在ログインしているユーザーを許可します。

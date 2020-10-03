@@ -10,12 +10,12 @@
           <%= link_to "→", user_show_one_week_path(date: @first_day_of_week.next_week(:monday)), class: "btn btn-xs btn-primary" %>
           </td>
       <td>指定勤務時間 <%= format_basic_info(@user.work_time) %></td>
-      <td colspan="3">基本時間 <%= format_basic_info(@user.basic_time) %> </td>
+      <td colspan="3">基本時間 <%= format_basic_info(@user.basic_work_time) %> </td>
       <td>初日　<%= l(@first_day_of_week, format: :short) %></td>
     </tr>
 
     <tr>
-      <td>所属　<%= @user.department.present? ? @user.department : "未所属" %></td>
+      <td>所属　<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
       <td>名前　<%= @user.name %></td>
       <td>コード</td>
       <td></td>
@@ -88,7 +88,7 @@
     
     <tfoot>
       <td colspan = "2"><!-- 総合勤務時間 -->
-      <%= basic_times_sum(@user.basic_time, @worked_sum) %>
+      <%= basic_work_times_sum(@user.basic_work_time, @worked_sum) %>
       </td>
       <td colspan = "5"><!-- 空白 -->
       </td>
