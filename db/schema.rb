@@ -10,15 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201003071706) do
+ActiveRecord::Schema.define(version: 20201003093709) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
     t.datetime "started_at"
     t.datetime "finished_at"
     t.string "note"
-    t.string "instruction"
-    t.string "instructor"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
