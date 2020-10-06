@@ -5,8 +5,6 @@ one:
   started_at: 2019-12-28 05:39:55
   finished_at: 2019-12-28 05:39:55
   note: MyString
-  instruction: MyString
-  instructor: MyString
   user: one
 
 two:
@@ -14,6 +12,4 @@ two:
   started_at: 2019-12-28 05:39:55
   finished_at: 2019-12-28 05:39:55
   note: MyString
-  instruction: MyString
-  instructor: MyString
   user: two
