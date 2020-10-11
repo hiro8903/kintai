@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  end_scheduled: MyString
+  _at: 2020-10-11 14:47:06
+  processing_content: MyString
+  superior: 1
+  state: 1
+
+two:
+  end_scheduled: MyString
+  _at: 2020-10-11 14:47:06
+  processing_content: MyString
+  superior: 1
+  state: 1

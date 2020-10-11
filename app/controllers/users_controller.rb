@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :show_one_week]
-  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :show_one_week, :edit_modaltest, :update_modaltest]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week, :edit_modaltest, :update_modaltest]
   before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info, :index]
+  before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info, :index, :edit_modaltest, :update_modaltest]
   before_action :admin_or_correct_user, only: [:show, :edit]
   before_action :set_one_month, only: [:show, :show_one_week]
   before_action :set_one_week , only: :show_one_week
@@ -73,6 +73,12 @@ class UsersController < ApplicationController
       flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
     end
     redirect_to users_url and return
+  end
+
+  def edit_modaltest
+  end
+
+  def update_modaltest
   end
 
   private
