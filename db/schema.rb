@@ -24,14 +24,14 @@ ActiveRecord::Schema.define(version: 20201011054706) do
   end
 
   create_table "overtime_requests", force: :cascade do |t|
+    t.date "overtimed_on"
     t.datetime "end_scheduled_at"
     t.string "processing_content"
     t.integer "state"
-    t.string "overtime_type"
-    t.integer "overtime_id"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["overtime_type", "overtime_id"], name: "index_overtime_requests_on_overtime_type_and_overtime_id"
+    t.index ["user_id"], name: "index_overtime_requests_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(version: 20201011054706) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-10-10 23:00:00"
-    t.datetime "work_time", default: "2020-10-10 22:30:00"
+    t.datetime "basic_work_time", default: "2020-10-12 23:00:00"
+    t.datetime "work_time", default: "2020-10-12 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

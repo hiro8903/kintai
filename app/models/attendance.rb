@@ -1,6 +1,6 @@
 class Attendance < ApplicationRecord
   belongs_to :user
-  has_many :overtime_requests, as: :overtime
+  # has_many :overtime_requests, as: :overtime
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
   
