@@ -5,7 +5,7 @@ class CreateOvertimeRequests < ActiveRecord::Migration[5.1]
       t.datetime :end_scheduled_at
       t.string :processing_content
       t.integer :state
-      t.references :user, foreign_key: true
+      t.references :attendance, foreign_key: true
 
       t.timestamps
     end

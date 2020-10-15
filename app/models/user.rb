@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # そのユーザーの持つAttendanceモデルのデータも一緒に削除されるようになります。
   has_many :attendances, dependent: :destroy
   # has_many :overtime_requests, as: :overtime
-  has_many :overtime_requests, dependent: :destroy
+  # has_many :overtime_requests, dependent: :destroy
   # ユーザーを古い順に並べる
   default_scope -> { order(created_at: :asc) }
   # 「remember_token」という仮想の属性を作成します。

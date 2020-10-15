@@ -1,4 +1,4 @@
 class OvertimeRequest < ApplicationRecord
   # belongs_to :overtime, polymorphic: true
-  belongs_to :user
+  belongs_to :attendance
 end

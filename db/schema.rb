@@ -28,10 +28,10 @@ ActiveRecord::Schema.define(version: 20201011054706) do
     t.datetime "end_scheduled_at"
     t.string "processing_content"
     t.integer "state"
-    t.integer "user_id"
+    t.integer "attendance_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_overtime_requests_on_user_id"
+    t.index ["attendance_id"], name: "index_overtime_requests_on_attendance_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(version: 20201011054706) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-10-12 23:00:00"
-    t.datetime "work_time", default: "2020-10-12 22:30:00"
+    t.datetime "basic_work_time", default: "2020-10-13 23:00:00"
+    t.datetime "work_time", default: "2020-10-13 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

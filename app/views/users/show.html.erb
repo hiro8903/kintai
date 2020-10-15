@@ -58,7 +58,7 @@
         <tr>
           <td>
             <%= link_to "modaltest", edit_modaltest_user_path(@user), remote: true, class: "btn btn-success" %><br>
-            <%= link_to "残業申請", new_user_overtime_request_path(@user), remote: true, class: "btn btn-success" %>
+            <%= link_to "残業申請", new_user_overtime_request_path(@user,day.id), remote: true, class: "btn btn-success" %>
           </td>
           <td><!-- 日付 -->
             <%= l(day.worked_on, format: :short) %>

@@ -12,6 +12,7 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
+        <%= form_with(model: @attendance, url: user_overtime_requests_path, local: true, method: :post) do |f| %>
         <table class="table table-bordered table-condensed user-table">
           <thead>
             <tr>
@@ -24,21 +25,37 @@
             </tr>
           </thead>
 
-          <tbody>
+          <tbody>      
+            <%= f.fields_for @overtime_request do |of| %>     
             <tr>
-              <td><%= @user.id %></td>
-              <td><%= @user.name %></td>
-              <td><%=  @attendance.class %></td>
+
+
+              <%
+=begin%>
+ <td><%= l(@overtime_request.overtimed_on, format: :short) %></td>
+              <td class="<%= "wday#{@overtime_request.overtimed_on.wday}"%>"><!-- 曜日 -->
+                <%= $days_of_the_week[@overtime_request.overtimed_on.wday] %>
+              </td>
+              <td><%= over_f.time_select :end_scheduled_at %></td>  
+<%
+=end%>
+              <td><%= of.time_select :end_scheduled_at %></td>
+              <td><%= @overtime_request.overtimed_on %></td>
+              <td>4</td>
               <td>4</td>
               <td>5</td>
               <td>6</td>
             </tr>
+            <% end %>
           </tbody>
 
           <tfoot>
+            
           </tfoot>
+      
         </table>
-          <%=  %>
+         <%= f.submit "送信" %>
+           <% end %>
 
         </div>
       </div>

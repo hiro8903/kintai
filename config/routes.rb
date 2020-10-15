@@ -27,7 +27,7 @@ Rails.application.routes.draw do
       patch 'update_modaltest'
     end
     resources :attendances, only: :update
-    resources :overtime_requests
+      resources :overtime_requests
   end
   
 end
