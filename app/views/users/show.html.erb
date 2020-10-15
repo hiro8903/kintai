@@ -28,6 +28,9 @@
     </tr>
   </table>
 </div>
+<%= link_to "【所属長承認申請のお知らせ】○件の通知があります", "#", remote: true %><br>
+<%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true %><br>
+<%= link_to "【残業申請のお知らせ】○件の通知があります", "#", remote: true %><br>
 <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
 <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
 
@@ -35,15 +38,29 @@
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
-        <th rowspan = "2">日付</th>
-        <th rowspan = "2">曜日</th>
+        <th rowspan = "3">残業申請</th>
+        <th rowspan = "3">日付</th>
+        <th rowspan = "3">曜日</th>
+        <th colspan = "7">実績</th>
+        <th colspan = "5">所定外勤務</th>
+      </tr>
+
+      <tr>
         <th rowspan = "2">勤怠登録</th>
         <th colspan = "2">出社</th>
         <th colspan = "2">退社</th>
         <th rowspan = "2">在社時間</th>
         <th rowspan = "2">備考</th>
+        <th colspan = "2">終了予定時間</th>
+        <th rowspan = "2">時間外時間</th>
+        <th rowspan = "2">業務処理内容</th>
+        <th rowspan = "2">指示者確認㊞</th>
       </tr>
+
+
       <tr>
+        <th>時</th>
+        <th>分</th>
         <th>時</th>
         <th>分</th>
         <th>時</th>
@@ -54,6 +71,9 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
+          <td><!-- 残業申請ボタン -->
+            <%= link_to "残業申請", "#", remote: true, class: "btn btn-primary" %>
+          </td>
           <td><!-- 日付 -->
             <%= l(day.worked_on, format: :short) %>
           </td>
@@ -86,22 +106,42 @@
           <td><!-- 備考 -->
             <%= day.note %>
           </td>
+          <td><!-- 所定外勤務終了予定ー時間 --></td>
+          <td><!-- 所定外勤務終了予定ー分 --></td>
+          <td><!-- 時間外時間 --></td>
+          <td><!-- 業務処理内容 --></td>
+          <td><!-- 指示者確認㊞ --></td>
         </tr>
       <% end %>
     </tbody>
     
     <tfoot>
-      <td colspan = "2"><!-- 総合勤務時間 -->
+      <td colspan = "1"><!-- 総合勤務時間 -->
       <%= basic_work_times_sum(@user.basic_work_time, @worked_sum) %>
       </td>
-      <td colspan = "5"><!-- 空白 -->
+      <td colspan = "2"><!-- 空白 -->
       </td>
-      <td><!-- 合計在社時間 -->
+      <td colspan="5"><!-- 合計在社時間 -->
         <%= @total_working_times %>
       </td>
-      <td><!-- 空白 -->
+      <td colspan="1"><!-- 空白 --></td>
+      <td colspan="5"><!-- 空白 --></td>
+      <td colspan="1"><!-- 1ヶ月分の勤怠を上長へ申請 -->
+        上長承認　：未<br>
+        <%
+=begin%>
+上長選択
+ <%= select :column, @上長.pluck(:name)%> 
+<%
+=end%>
+        <%= link_to "申請", "#", remote: true, class: "btn btn-primary" %>
       </td>
     </tfoot>
     
   </table>
 </div>
+
+<!-- モーダルウインドウ表示 未実装
+<div id="edit-modaltest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+-->
+
