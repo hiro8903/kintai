@@ -22,6 +22,7 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    # debugger
   end
   
   def show_one_week

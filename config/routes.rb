@@ -23,8 +23,10 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       get 'attendances/edit'
       patch 'attendances/update_one_month'
+      get :monthly_requesting, :monthly_requesters
     end
     resources :attendances, only: :update
+    resources :monthly_requests
   end
   
 end

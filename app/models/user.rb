@@ -2,6 +2,15 @@ class User < ApplicationRecord
   # Attendanceモデルと１対多という関連付けさせ、ユーザーが削除された時に、
   # そのユーザーの持つAttendanceモデルのデータも一緒に削除されるようになります。
   has_many :attendances, dependent: :destroy
+  has_many :active_monthly_requests, class_name:  "MonthlyRequest",
+                                      foreign_key: "requester_id",
+                                      dependent:   :destroy
+  has_many :monthly_requesting, through: :active_monthly_requests, source: :requested
+  has_many :passive_active_monthly_requests, class_name:  "MonthlyRequest",
+                                   foreign_key: "requested_id",
+                                   dependent:   :destroy
+  has_many :monthly_requesters, through: :passive_active_monthly_requests, source: :requester
+
   # ユーザーを古い順に並べる
   default_scope -> { order(created_at: :asc) }
   # 「remember_token」という仮想の属性を作成します。
