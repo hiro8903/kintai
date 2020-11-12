@@ -46,7 +46,17 @@ User.create!(name: name,
     password_confirmation: password)
 end
 
-MonthlyRequest.create!(requester_id:1,
-                      requested_id:2,
-                      request_month:2020-10-01,
-                      state:2)
+# MonthlyRequest.create!(requester_id:1,
+#                         requested_id:2,
+#                         request_month: "2020-10-01",
+#                         state:2)
+
+# MonthlyRequest.create!(requester_id:1,
+#                         requested_id:2,
+#                         request_month: "2020-09-01",
+#                         state:2)
+
+# MonthlyRequest.create!(requester_id:1,
+#                         requested_id:3,
+#                         request_month: "2020-10-01",
+#                         state:2)

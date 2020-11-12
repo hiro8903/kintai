@@ -1,0 +1,2 @@
+module MonthlyRequestsHelper
+end

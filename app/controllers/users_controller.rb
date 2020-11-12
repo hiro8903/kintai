@@ -23,6 +23,8 @@ class UsersController < ApplicationController
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
     # debugger
+    @monthly_requests = MonthlyRequest.where(requested_id: @user.id, state:2)
+    @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
   end
   
   def show_one_week

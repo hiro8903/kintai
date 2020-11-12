@@ -62,6 +62,9 @@ class ApplicationController < ActionController::Base
           one_month.each { |day| @user.attendances.create!(worked_on: day) }
         end
         @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+        # 一月分の申請を申請状態「なし」で作成する
+        @monthly_request = MonthlyRequest.create!(requester_id: @user.id,requested_id: @user.id, request_month:@first_day, state:1)
+        # debugger
     end
   
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。

@@ -28,7 +28,7 @@
     </tr>
   </table>
 </div>
-<%= link_to "【所属長承認申請のお知らせ】○件の通知があります", "#", remote: true %><br>
+<%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", "#", remote: true %><br>
 <%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true %><br>
 <%= link_to "【残業申請のお知らせ】○件の通知があります", "#", remote: true %><br>
 <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
@@ -139,8 +139,33 @@
     </tfoot>
     
   </table>
+
+
+<%
+=begin%>
+試しに表示できた
+ <% @monthly_requests.each do |requ| %>
+  <%= requ.requester.name %>
+<% end %> 
+<%
+=end%>
+
+
+
 </div>
 
+<% @monthly_requests.each do |monthly_request| %>
+  <td>申請者：<%= monthly_request.requester.name %></td>
+  <td>申請先<%= monthly_request.requested.name %></td>
+  <td>状態：<%= monthly_request.state %></td>
+  <td>状態：<%= monthly_request.request_month %></td><br>
+<% end %>
+
+<td>-----------------------</td>
+<td>：<%= @monthly_request.request_month %></td>
+<% if @monthly_request.state == 2..4 %>
+  <td>：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%></td>
+<% end %>
 <!-- モーダルウインドウ表示 未実装
 <div id="edit-modaltest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 -->
