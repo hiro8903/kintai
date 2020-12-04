@@ -25,6 +25,9 @@ class UsersController < ApplicationController
     # debugger
     @monthly_requests = MonthlyRequest.where(requested_id: @user.id, state:2)
     @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
+    # debugger
+    @superiors = User.where(superior: true)
+    # debugger
   end
   
   def show_one_week

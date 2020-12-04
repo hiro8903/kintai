@@ -127,16 +127,76 @@
       <td colspan="1"><!-- 空白 --></td>
       <td colspan="5"><!-- 空白 --></td>
       <td colspan="1"><!-- 1ヶ月分の勤怠を上長へ申請 -->
-        上長承認　：未<br>
+        <br>
         <%
 =begin%>
 上長選択
  <%= select :column, @上長.pluck(:name)%> 
 <%
 =end%>
-        <%= link_to "申請", "#", remote: true, class: "btn btn-primary" %>
+
+  <% if @monthly_request.state == "なし" %>
+    所属長承認：未
+  <% elsif @monthly_request.state == "申請中" %>
+    所属長承認：<%= @monthly_request.requested.name %>に申請中
+  <% elsif @monthly_request.state == "承認" %>
+    所属長承認：<%= @monthly_request.requested.name %>から承認済
+  <% else @monthly_request.state == "否認" %>
+    所属長承認：<%= @monthly_request.requested.name %>から否認
+  <% end %>
+
+
+ 
+ <%
+=begin%>
+ <%= form_with(model: @user, url: user_monthly_request_path(@user, date: @first_day), local: true, method: :patch) do |f| %>
+    <%= f.fields_for @monthly_request, local: true do |mr| %>
+
+ <%= mr.collection_select :requested_id, @superiors, :id, :name %> 
+
+ <%= hidden_field_tag :state, "申請中" %>  
+
+    <% end %>
+    <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
+  <% end %>  
+<%
+=end%>
+
+ 
+
+
+ <%
+=begin%>
+ <%= form_with(model: @monthly_request, url: user_monthly_request_path(@user, date: @first_day), local: true, method: :patch) do |f| %>  
+<%
+=end%>
+
+
+<%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
+<%= f.text_field :name, class: "form-control" %>
+<%= f.collection_select :requested_id, @superiors, :id, :name %>
+<%= f.select :state, ["なし","申請中","承認","否認"] %>
+
+ <%
+=begin%>
+ 最終的にはこれを採用する
+ <%= f.hidden_field :state, :value => "申請中" %> 
+<%
+=end%>
+
+
+ <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
+      <% end %> 
+
+
+
+
       </td>
-    </tfoot>
+
+
+
+    </tfoot> 
+
     
   </table>
 
@@ -152,6 +212,31 @@
 
 
 
+<div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </div>
 
 <% @monthly_requests.each do |monthly_request| %>
@@ -163,9 +248,10 @@
 
 <td>-----------------------</td>
 <td>：<%= @monthly_request.request_month %></td>
-<% if @monthly_request.state == 2..4 %>
-  <td>：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%></td>
-<% end %>
+
+  <td>申請先：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%></td>
+  <%= @superiors.count %>
+
 <!-- モーダルウインドウ表示 未実装
 <div id="edit-modaltest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 -->
