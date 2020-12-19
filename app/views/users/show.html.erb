@@ -28,7 +28,19 @@
     </tr>
   </table>
 </div>
-<%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", "#", remote: true %><br>
+
+<%
+=begin%>
+ <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", "#", remote: true %><br> 
+<%
+=end%>
+
+
+<%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user), remote: true %><br>
+
+
+
+
 <%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true %><br>
 <%= link_to "【残業申請のお知らせ】○件の通知があります", "#", remote: true %><br>
 <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
@@ -173,9 +185,22 @@
 
 
 <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
+
 <%= f.text_field :name, class: "form-control" %>
 <%= f.collection_select :requested_id, @superiors, :id, :name %>
-<%= f.select :state, ["なし","申請中","承認","否認"] %>
+
+
+
+
+
+ <%
+=begin%>
+ <%= f.select :state, ["申請中"] %>    
+<%
+=end%>
+
+
+
 
  <%
 =begin%>
@@ -250,9 +275,10 @@
 <td>：<%= @monthly_request.request_month %></td>
 
   <td>申請先：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%></td>
-  <%= @superiors.count %>
+  <%= @monthly_request.id %>
 
 <!-- モーダルウインドウ表示 未実装
 <div id="edit-modaltest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 -->
 
+<div id="edit-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

@@ -32,6 +32,7 @@ class AttendancesController < ApplicationController
 
 
   def update_one_month
+    debugger
     if attendances_update_only_one_side?
       ActiveRecord::Base.transaction do # トランザクションを開始します。
         attendances_params.each do |id, item|
@@ -51,7 +52,7 @@ class AttendancesController < ApplicationController
         end
       redirect_to attendances_edit_user_url(date: params[:date])
   end  
-  
+
    private
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params

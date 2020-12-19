@@ -25,8 +25,12 @@ Rails.application.routes.draw do
       patch 'attendances/update_one_month'
     end
     resources :attendances, only: :update
-    resources :monthly_requests
-     get :monthly_requesting, :monthly_requesters
+    resources :monthly_requests do
+      collection do
+        patch :request_update
+      end
+    end
+     get :monthly_requesting, :monthly_requesters  # 現在利用していない
   end
   
 end
