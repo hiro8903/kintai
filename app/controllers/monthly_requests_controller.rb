@@ -90,8 +90,12 @@ class MonthlyRequestsController < ApplicationController
   # debugger
         ActiveRecord::Base.transaction do # トランザクションを開始します。
           requests_params.each do |id, item|
-            request = MonthlyRequest.find(id)
-            request.update_attributes!(item)
+            # debugger
+              request = MonthlyRequest.find(id)
+              # debugger
+              if item[:check] == "1"
+                request.update_attributes!(item) 
+              end
           end
         end
           flash[:success] = "1ヶ月分の勤怠情報を承認しました。"
@@ -122,7 +126,7 @@ class MonthlyRequestsController < ApplicationController
     def requests_params
       # params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
       # params.require(:monthly_request).permit(:state)[:monthly_requests]
-      params.permit(monthly_requests: [:state])[:monthly_requests]
+      params.permit(monthly_requests: [:state, :check])[:monthly_requests]
     end
 
 end

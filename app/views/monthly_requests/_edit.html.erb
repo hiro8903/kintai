@@ -45,8 +45,10 @@
 =end%>
 
             <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
-            <td></td>
-            <td></td>
+
+    
+ <td><%= fr.check_box 'check', {checked: false}  %></td>  
+
           </tr>
           <%
 =begin%>
