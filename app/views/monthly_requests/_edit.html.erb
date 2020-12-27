@@ -21,16 +21,18 @@
                 <td>変更</td>
                 <td>勤怠を確認する</td>
               </tr>
-              <tr>
-                <% requests_for_each_user(user.id).each do |request| %>
+              
+              <% requests_for_each_user(user.id).each do |request| %>
+                <tr>
                   <%= f.fields_for "monthly_requests[]", request do |fr| %>
                     <td><%= l(request.request_month, format: :month) %></td>
                     <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
                     <td><%= fr.check_box 'check', {checked: false}  %></td>  
                     <td><%= link_to "確認", user_path(request.requester_id, date: request.request_month), class: "btn btn-primary" %></td>
                   <% end %>
-                <% end %>
-              </tr>
+                </tr>
+              <% end %>
+              
             <table>
         <% end %>
         <div class="center">
