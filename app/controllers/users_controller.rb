@@ -3,7 +3,8 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info, :index]
-  before_action :admin_or_correct_user, only: [:show, :edit]
+  before_action :admin_or_correct_user, only: [:edit]
+  before_action :admin_or_correct_user_or_requesting_user, only:[:show]
   before_action :set_one_month, only: [:show, :show_one_week]
   before_action :set_one_week , only: :show_one_week
   
@@ -22,17 +23,14 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-    # debugger
     @monthly_requests = MonthlyRequest.where(requested_id: @user.id, state:2)
     @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
-    # debugger
     @superiors = User.where(superior: true)
-    # debugger
+    @superiors_other_then_myself = @superiors.where.not(id: @user.id)
   end
   
   def show_one_week
     @worked_sum = @attendances_of_week.where.not(started_at: nil).count
-
   end
 
   def new
@@ -95,6 +93,14 @@ class UsersController < ApplicationController
     def admin_or_correct_user
       @user = User.find(params[:id]) if @user.blank?
       unless current_user?(@user) || current_user.admin?
+        flash[:danger] = "権限がありません。"
+        redirect_to(root_url)
+      end  
+    end
+
+    def admin_or_correct_user_or_requesting_user
+      @user = User.find(params[:id]) if @user.blank?
+      unless current_user?(@user) || current_user.admin? || @user.monthly_requesting.find_by(id:current_user) == current_user
         flash[:danger] = "権限がありません。"
         redirect_to(root_url)
       end  

@@ -24,15 +24,12 @@ class AttendancesController < ApplicationController
       end
     end
     redirect_to @user
-    
   end
   
   def edit
   end
 
-
   def update_one_month
-    debugger
     if attendances_update_only_one_side?
       ActiveRecord::Base.transaction do # トランザクションを開始します。
         attendances_params.each do |id, item|

@@ -1,13 +1,17 @@
 <% provide(:title, @user.name) %>
   <!-- tr:Table Row	表の行  th:Table Header	表の見出しセル td:Table Data	表のデータセル	 -->
   <!--rowspan:縦結合、colspan：横結合-->
-<div>
+
+<div><!-- ユーザー情報テーブル -->
+<% unless current_user?(@user) %>
+  <%= link_to "戻る", 'javascript:history.back()', class: "btn btn-lg btn-primary" %>
+<% end %>
   <table class="table table-bordered table-condensed user-table">
     <tr>
-      <td><%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-xs btn-primary" %>
+      <td><%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
           <%= l(@first_day,format: :middle) %>
           時間管理表
-          <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-xs btn-primary" %>
+          <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
           </td>
       <td>
         指定勤務開始時間 <%= l(@user.designated_work_start_time, format: :time) %><br>
@@ -29,24 +33,21 @@
   </table>
 </div>
 
-<%
-=begin%>
- <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", "#", remote: true %><br> 
-<%
-=end%>
+<div><!-- ユーザー情報テーブル・勤怠テーブル間の通知ボタンと勤怠編集ボタン -->
+<% if current_user?(@user) %>
+  <% if @monthly_requests.count == 0 %>
+    【所属長承認申請のお知らせ】<br>
+  <% else %>
+    <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user, date: @first_day), remote: true %><br>
+  <% end %>
+  <%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true %><br>
+  <%= link_to "【残業申請のお知らせ】○件の通知があります", "#", remote: true %><br>
+  <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
+  <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
+<% end %>
+</div>
 
-
-<%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user), remote: true %><br>
-
-
-
-
-<%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true %><br>
-<%= link_to "【残業申請のお知らせ】○件の通知があります", "#", remote: true %><br>
-<%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %>
-<!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
-
-<div>
+<div><!-- 勤怠テーブル -->
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
@@ -56,7 +57,6 @@
         <th colspan = "7">実績</th>
         <th colspan = "5">所定外勤務</th>
       </tr>
-
       <tr>
         <th rowspan = "2">勤怠登録</th>
         <th colspan = "2">出社</th>
@@ -68,8 +68,6 @@
         <th rowspan = "2">業務処理内容</th>
         <th rowspan = "2">指示者確認㊞</th>
       </tr>
-
-
       <tr>
         <th>時</th>
         <th>分</th>
@@ -79,12 +77,12 @@
         <th>分</th>
       </tr>
     </thead>
-<!-- -->
+    
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
           <td><!-- 残業申請ボタン -->
-            <%= link_to "残業申請", "#", remote: true, class: "btn btn-primary" %>
+            <%= link_to "残業申請", "#", remote: true, class: "btn btn-primary"  if current_user?(@user) %>
           </td>
           <td><!-- 日付 -->
             <%= l(day.worked_on, format: :short) %>
@@ -94,7 +92,7 @@
           </td>
           <td><!-- 勤怠登録ボタン-->
             <% if btn_text = attendance_state(day) %>
-              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
+              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" if current_user?(@user)%>
             <% end %>
           </td>
           <td><!-- 出社ー時間 -->
@@ -139,147 +137,48 @@
       <td colspan="1"><!-- 空白 --></td>
       <td colspan="5"><!-- 空白 --></td>
       <td colspan="1"><!-- 1ヶ月分の勤怠を上長へ申請 -->
-        <br>
-        <%
-=begin%>
-上長選択
- <%= select :column, @上長.pluck(:name)%> 
-<%
-=end%>
+        <div>
+          <% if @monthly_request.state == "なし" %>
+            所属長承認：未
+          <% elsif @monthly_request.state == "申請中" %>
+            所属長承認：<%= @monthly_request.requested.name %>に申請中
+          <% elsif @monthly_request.state == "承認" %>
+            所属長承認：<%= @monthly_request.requested.name %>から承認済
+          <% else @monthly_request.state == "否認" %>
+            所属長承認：<%= @monthly_request.requested.name %>から否認
+          <% end %>
+        </div>
+        <div>
+          <% if current_user?(@user) %>
+            <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
+              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name %>
+              <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
+            <% end %> 
+          <% end %>
+        </div>
+      </td>
+    </tfoot>
+  </table>
+</div>
 
-  <% if @monthly_request.state == "なし" %>
-    所属長承認：未
-  <% elsif @monthly_request.state == "申請中" %>
-    所属長承認：<%= @monthly_request.requested.name %>に申請中
-  <% elsif @monthly_request.state == "承認" %>
-    所属長承認：<%= @monthly_request.requested.name %>から承認済
-  <% else @monthly_request.state == "否認" %>
-    所属長承認：<%= @monthly_request.requested.name %>から否認
+
+<div> <!-- ひと月の勤怠申請確認用（完成後は削除または非表示にする） -->
+  <% @monthly_requests.each do |monthly_request| %>
+    <td>申請者:<%= monthly_request.requester.name %></td><br>
+    <td>申請先:<%= monthly_request.requested.name %></td><br>
+    <td>状　態:<%= monthly_request.state %></td><br>
+    <td>申請月:<%= monthly_request.request_month %></td><br>
+    <td>-----------------------</td><br>
   <% end %>
 
-
- 
- <%
-=begin%>
- <%= form_with(model: @user, url: user_monthly_request_path(@user, date: @first_day), local: true, method: :patch) do |f| %>
-    <%= f.fields_for @monthly_request, local: true do |mr| %>
-
- <%= mr.collection_select :requested_id, @superiors, :id, :name %> 
-
- <%= hidden_field_tag :state, "申請中" %>  
-
-    <% end %>
-    <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
-  <% end %>  
-<%
-=end%>
-
- 
-
-
- <%
-=begin%>
- <%= form_with(model: @monthly_request, url: user_monthly_request_path(@user, date: @first_day), local: true, method: :patch) do |f| %>  
-<%
-=end%>
-
-
-<%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
-
-<%= f.text_field :name, class: "form-control" %>
-<%= f.collection_select :requested_id, @superiors, :id, :name %>
-
-
-
-
-
- <%
-=begin%>
- <%= f.select :state, ["申請中"] %>    
-<%
-=end%>
-
-
-
-
- <%
-=begin%>
- 最終的にはこれを採用する
- <%= f.hidden_field :state, :value => "申請中" %> 
-<%
-=end%>
-
-
- <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
-      <% end %> 
-
-
-
-
-      </td>
-
-
-
-    </tfoot> 
-
-    
-  </table>
-
-
-<%
-=begin%>
-試しに表示できた
- <% @monthly_requests.each do |requ| %>
-  <%= requ.requester.name %>
-<% end %> 
-<%
-=end%>
-
-
-
-<div>
-
+  <td>**********************</td><br>
+  <td>
+    リクエストid：<%= @monthly_request.id %><br>
+    リクエスト月：<%= @monthly_request.request_month %>
+        申請先：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%><br>
+    チェック状態：<%= @monthly_request.check %><br>
+  </td>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-
-<% @monthly_requests.each do |monthly_request| %>
-  <td>申請者：<%= monthly_request.requester.name %></td>
-  <td>申請先<%= monthly_request.requested.name %></td>
-  <td>状態：<%= monthly_request.state %></td>
-  <td>状態：<%= monthly_request.request_month %></td><br>
-<% end %>
-
-<td>-----------------------</td>
-<td>：<%= @monthly_request.request_month %></td>
-
-  <td>申請先：<%= @monthly_request.requested.name %>:<%= @monthly_request.state%></td>
-  <%= @monthly_request.id %>
-  <%= @monthly_request.check %>
-
-<!-- モーダルウインドウ表示 未実装
-<div id="edit-modaltest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
--->
-
+<!-- モーダルウインドウ表示 -->
 <div id="edit-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

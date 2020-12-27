@@ -23,11 +23,12 @@ Rails.application.routes.draw do
       patch 'update_basic_info'
       get 'attendances/edit'
       patch 'attendances/update_one_month'
+      get 'monthly_requests/request_confirmation'
     end
     resources :attendances, only: :update
     resources :monthly_requests do
       collection do
-        patch :request_update
+        patch :request_update # ひと月分の勤怠申請に対する上長による判断
       end
     end
      get :monthly_requesting, :monthly_requesters  # 現在利用していない

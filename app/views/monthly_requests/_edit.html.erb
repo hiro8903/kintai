@@ -3,70 +3,42 @@
 
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
+
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <%= form_with(url: request_update_user_monthly_requests_path(@user),local: true, method: :patch) do |f| %> 
-      <% @requesters.each do |user| %>
-
-
-        <div>【<%= user.name %>からの1ヵ月分勤怠申請】</div>
-      
-        <table class="table table-bordered ">
-        
-        
-       
-          <tr>
-            <td>月</td>
-            <td>指示者確認㊞</td>
-            <td>変更</td>
-            <td>勤怠を確認する</td>
-          </tr>
-
-          <tr>
-          <% requests_for_each_user(user.id).each do |request| %>
-<%= f.fields_for "monthly_requests[]", request do |fr| %>
-
-
-
-          <%
-=begin%>
- <%= form_with(model: @monthly_request, "#", local: true, method: :patch) do |f| %> 
-<%
-=end%>
-
-            <td><%= l(request.request_month, format: :month) %></td>
-           
- <%
-=begin%>
- <%= hidden_field_tag 'monthly_request.id[]', requests.id %>  
-<%
-=end%>
-
-            <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
-
-    
- <td><%= fr.check_box 'check', {checked: false}  %></td>  
-
-          </tr>
-          <%
-=begin%>
- <% end %> 
-<%
-=end%>
-
-    <% end %>
-          <% end %>
-        <table>
-       
-        
-      <% end %>
-      <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %>
-      <% end %>
-      <h1 class="modal-title"></h1>
     </div>
+
     <div class="modal-body">
+      <%= form_with(url: request_update_user_monthly_requests_path(@user),local: true, method: :patch) do |f| %> 
+        <% @requesters.each do |user| %>
+          <h3 class="center">【<%= user.name %>からの1ヵ月分勤怠申請】</h3>
+            <table class="table table-bordered center">
+              <tr>
+                <td>月</td>
+                <td>指示者確認㊞</td>
+                <td>変更</td>
+                <td>勤怠を確認する</td>
+              </tr>
+              <tr>
+                <% requests_for_each_user(user.id).each do |request| %>
+                  <%= f.fields_for "monthly_requests[]", request do |fr| %>
+                    <td><%= l(request.request_month, format: :month) %></td>
+                    <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
+                    <td><%= fr.check_box 'check', {checked: false}  %></td>  
+                    <td><%= link_to "確認", user_path(request.requester_id, date: request.request_month), class: "btn btn-primary" %></td>
+                  <% end %>
+                <% end %>
+              </tr>
+            <table>
+        <% end %>
+        <div class="center">
+          <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %>
+          <%= link_to "キャンセル", user_path(@user, date: @first_day), class: "btn btn-lg btn-default" %>
+        </div>
+      <% end %>
     </div>
+
   </div>
 </div>
