@@ -2,15 +2,39 @@ class User < ApplicationRecord
   # Attendanceモデルと１対多という関連付けさせ、ユーザーが削除された時に、
   # そのユーザーの持つAttendanceモデルのデータも一緒に削除されるようになります。
   has_many :attendances, dependent: :destroy
-  # has_many :monthly_requests, dependent: :destroy
+  # has_many :over_time_requests, class_name:  "OverTimeRequest",
+  #                               foreign_key: "requester_id",
+  #                               dependent:   :destroy
+  # has_many :attendances, dependent: :destroy
+  # has_many :over_time_requests, dependent: :destroy
+
+  # MonthlyRequestモデルと関連付けをさせている
   has_many :active_monthly_requests, class_name:  "MonthlyRequest",
                                       foreign_key: "requester_id",
                                       dependent:   :destroy
   has_many :monthly_requesting, through: :active_monthly_requests, source: :requested
+
   has_many :passive_active_monthly_requests, class_name:  "MonthlyRequest",
                                    foreign_key: "requested_id",
-                                   dependent:   :destroy
+                                   dependent: :destroy
   has_many :monthly_requesters, through: :passive_active_monthly_requests, source: :requester
+
+  # OverTimeRequestモデルと関連付けをさせている
+  # has_many :active_over_time_requests, class_name:  "OverTimeRequest",
+  #                                 foreign_key: "requester_id",
+  #                                 dependent: :destroy
+  # has_many :over_time_requesting, through: :active_over_time_requests, source: :requested
+                                
+  # has_many :passive_active_over_time_requests, class_name: "OverTimeRequest",
+  #                                 foreign_key: "requested_id",
+  #                                 dependent:   :destroy
+  # has_many :over_time_requesters, through: :passive_over_time_requests, source: :requester
+
+  # has_many :active_over_time_requests, class_name:  "OverTimeRequest",
+  #                                 foreign_key: "requester_id",
+  #                                 dependent:   :destroy
+  # has_many :over_time_requesting, through: :active_over_time_requests, source: :requested
+
 
   # ユーザーを古い順に並べる
   default_scope -> { order(created_at: :asc) }

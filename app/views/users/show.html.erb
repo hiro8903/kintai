@@ -81,9 +81,25 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
+        <td>
+        
+ <%=  over_time_request(day).end_scheduled_at if over_time_request(day).present? %> 
+ <%=  day.id %> 
+          <%= link_to "残業申請",new_user_over_time_request_path(@user, day), remote: true, class: "btn btn-primary"  if current_user?(@user) %>
+      
+        </td>
+        <%
+=begin%>
+ <td><%= day.active_over_time_requests.present? %></td>
           <td><!-- 残業申請ボタン -->
-            <%= link_to "残業申請", "#", remote: true, class: "btn btn-primary"  if current_user?(@user) %>
-          </td>
+          <% unless day.active_over_time_requests.present? %>
+            <%= link_to "残業申請",new_user_over_time_request_path(@user, day), remote: true, class: "btn btn-primary"  if current_user?(@user) %>
+          <% else %>
+            <%= link_to "最申請",edit_user_over_time_request_path(@user, day), remote: true, class: "btn btn-primary"  if current_user?(@user) %>
+          <% end %>
+        </td> 
+<%
+=end%>
           <td><!-- 日付 -->
             <%= l(day.worked_on, format: :short) %>
           </td>
@@ -116,11 +132,29 @@
           <td><!-- 備考 -->
             <%= day.note %>
           </td>
-          <td><!-- 所定外勤務終了予定ー時間 --></td>
-          <td><!-- 所定外勤務終了予定ー分 --></td>
-          <td><!-- 時間外時間 --></td>
-          <td><!-- 業務処理内容 --></td>
-          <td><!-- 指示者確認㊞ --></td>
+          <td><!-- 所定外勤務終了予定ー時間 -->
+            
+ <%= l(over_time_request(day).end_scheduled_at, format: :hour) if over_time_request(day).present? %> 
+          </td>
+          <td><!-- 所定外勤務終了予定ー分 -->
+             <%= every_15_minutes(over_time_request(day).end_scheduled_at) if over_time_request(day).present? %>
+          </td>
+          <td><!-- 時間外時間 -->
+            <% if over_time_request(day).present? %>
+             
+ <%= sprintf("%.2f",(over_time_request(day).end_scheduled_at - @user.designated_work_end_time.change(year: @first_day.year, month: day.worked_on.month, day: day.worked_on.day))/60/60) %> 
+
+
+<%= over_time_request(day).end_scheduled_at %>
+
+            <% end %>
+          </td>
+          <td><!-- 業務処理内容 -->
+             <%=  %>
+          </td>
+          <td><!-- 指示者確認㊞ -->
+             <%=  %>
+          </td>
         </tr>
       <% end %>
     </tbody>
@@ -151,7 +185,7 @@
         <div>
           <% if current_user?(@user) %>
             <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
-              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name %>
+              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name %><br>
               <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
             <% end %> 
           <% end %>
@@ -182,3 +216,4 @@
 
 <!-- モーダルウインドウ表示 -->
 <div id="edit-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="over-time-request-new" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

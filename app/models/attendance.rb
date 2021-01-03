@@ -1,5 +1,17 @@
 class Attendance < ApplicationRecord
   belongs_to :user
+  has_one :over_time_request, dependent: :destroy
+  # has_one :over_time_request
+  # has_many :user, through: :over_time_requests
+  # has_one :active_over_time_request, class_name:  "OverTimeRequest",
+  #                                 foreign_key: "attendance_id",
+  #                                 dependent:   :destroy
+  # has_one :over_time_requesting, through: :active_over_time_requests, source: :requested
+                                
+  # has_one :passive_active_over_time_requests, class_name: "OverTimeRequest",
+  #                                 foreign_key: "requested_id",
+  #                                 dependent:   :destroy
+  # has_one :over_time_requesters, through: :passive_over_time_requests, source: :requester
   
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attendance_id: 1
+  requested_id: 1
+  end_scheduled_at: 2020-12-28 09:15:28
+  content: MyString
+  state: 1
+
+two:
+  attendance_id: 1
+  requested_id: 1
+  end_scheduled_at: 2020-12-28 09:15:28
+  content: MyString
+  state: 1

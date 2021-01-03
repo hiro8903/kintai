@@ -1,0 +1,46 @@
+<% provide(:class_text, 'basic-info') %>
+<% provide(:button_text, '更新') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h3 class="modal-title center">【残業申請】</h3>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+        <%= form_with(model: @over_time_request, url: user_over_time_requests_path(), local: true) do |f| %>
+          <table class="table table-bordered center">
+            <tr>
+              <td>日付</td>
+              <td>曜日</td>
+              <td>終了予定時間</td>
+              <td>翌日</td>
+              <td>業務処理内容</td>
+              <td>指示者確認㊞</td>
+            </tr>
+            <tr>
+              <td><%= l(@attendance.worked_on, format: :short) %></td>
+              <td class="<%= "wday#{@attendance.worked_on.wday}"%>">
+                <%= $days_of_the_week[@attendance.worked_on.wday] %>
+              </td>
+              <td><%= f.time_field :end_scheduled_at, class: "form-control" %></td>
+              <td><%= f.check_box 'tomorrow', {checked: false}  %></td>
+              <td><%= f.text_field :content, class: "form-control" %></td>
+              <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name %><br></td>
+              <%= hidden_field_tag :attendance_id, @attendance.id  %>
+            </tr>
+          </table>
+            <div class="center">
+              <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %> 
+              <%= link_to "キャンセル",  user_path(@user, date: @attendance.worked_on), class: "btn btn-lg btn-default" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

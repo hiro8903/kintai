@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201219153837) do
+ActiveRecord::Schema.define(version: 20201228001528) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -35,14 +35,26 @@ ActiveRecord::Schema.define(version: 20201219153837) do
     t.index ["requester_id"], name: "index_monthly_requests_on_requester_id"
   end
 
+  create_table "over_time_requests", force: :cascade do |t|
+    t.integer "attendance_id"
+    t.integer "requester_id"
+    t.integer "requested_id"
+    t.datetime "end_scheduled_at"
+    t.string "content"
+    t.integer "state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attendance_id"], name: "index_over_time_requests_on_attendance_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-12-02 23:00:00"
-    t.datetime "work_time", default: "2020-12-02 22:30:00"
+    t.datetime "basic_work_time", default: "2021-01-03 23:00:00"
+    t.datetime "work_time", default: "2021-01-03 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

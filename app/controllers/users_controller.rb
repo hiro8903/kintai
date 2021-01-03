@@ -27,6 +27,7 @@ class UsersController < ApplicationController
     @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
+    # debugger
   end
   
   def show_one_week
