@@ -3,6 +3,8 @@ ja:
     models:
       user: ユーザー
       attendance: 勤怠
+      monthly_request: ひと月分の申請
+      over_time_request: 残業申請
     attributes:
         user:
           id: ID
@@ -23,3 +25,16 @@ ja:
           finished_at: 退勤時間
           note: 備考
           user: ユーザーID
+        monthly_request:
+          requester: 申請者ID
+          requested: 申請先上長ID
+          request_month: 申請月
+          state: ひと月分勤怠申請状態
+        over_time_request:
+          attendance: 勤怠ID
+          requester: 申請者ID
+          requested: 申請先上長ID
+          end_scheduled_at: 残業終了予定時間
+          content: 残業業務内容
+          state: 残業申請状態
+          designated_work_end_time: 指定勤務終了時間 # Userモデルのdesignated_work_end_timeと同じ。エラー表示日本語化の為の設定。

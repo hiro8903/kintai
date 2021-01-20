@@ -32,7 +32,7 @@ Rails.application.routes.draw do
       end
     end
      get :monthly_requesting, :monthly_requesters  # 現在利用していない
-     resources :over_time_requests
+    resources :over_time_requests
   end
   
 end

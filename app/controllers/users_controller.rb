@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   before_action :admin_or_correct_user, only: [:edit]
   before_action :admin_or_correct_user_or_requesting_user, only:[:show]
   before_action :set_one_month, only: [:show, :show_one_week]
+  # before_action :rs, only: [:show]
   before_action :set_one_week , only: :show_one_week
   
   def index
@@ -28,6 +29,7 @@ class UsersController < ApplicationController
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
     # debugger
+    @over_time_requests = OverTimeRequest.where(requested_id: @user.id, state:2)
   end
   
   def show_one_week
@@ -99,9 +101,10 @@ class UsersController < ApplicationController
       end  
     end
 
+    # 管理権限者、または現在ログインしているユーザー、または申請先の上長を許可します。
     def admin_or_correct_user_or_requesting_user
       @user = User.find(params[:id]) if @user.blank?
-      unless current_user?(@user) || current_user.admin? || @user.monthly_requesting.find_by(id:current_user) == current_user
+      unless current_user?(@user) || current_user.admin? || @user.monthly_requesting.find_by(id:current_user) == current_user || @user.over_time_requesting.find_by(id:current_user) == current_user
         flash[:danger] = "権限がありません。"
         redirect_to(root_url)
       end  

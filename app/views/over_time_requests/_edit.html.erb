@@ -1,0 +1,57 @@
+<% provide(:class_text, 'basic-info') %>
+<% provide(:button_text, '更新') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+ <div class="modal-body">
+      <%= form_with(url: user_over_time_request_path,local: true, method: :patch) do |f| %> 
+        <% @requesters.each do |user| %>
+          <h3 class="center">【<%= user.name %>からの1ヵ月分勤怠申請】</h3>
+            <table class="table table-bordered center">
+              <tr>
+                <td>日付</td>
+                <td>曜日</td>
+                <td>終了予定時間</td>
+                <td>指定勤務終了時間</td>
+                <td>時間外時間</td>
+                <td>指示者確認㊞</td>
+                <td>変更</td>
+                <td>勤怠を確認する</td>
+              </tr>
+              
+              <% requests_for_each_user(user.id).each do |request| %>
+                <tr>
+                  <%= f.fields_for "over_time_requests[]", request do |fr| %>
+                    <td><%= l(request.attendance.worked_on, format: :short) %></td>
+                    <td class="<%= "wday#{request.attendance.worked_on.wday}"%>">
+                      <%= $days_of_the_week[request.attendance.worked_on.wday] %>
+                    </td>
+                    <td><%= l(request.end_scheduled_at, format: :time) %></td>
+                    <td><%= l(request.requester.designated_work_end_time, format: :time) %></td>
+                  
+                    <td><%= request_over_time(request)  %></td>
+                    <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
+                    <td><%= fr.check_box 'check', {checked: false}  %></td>  
+                    <td><%= link_to "確認", user_path(request.requester_id, date: request.attendance.worked_on.beginning_of_month), class: "btn btn-primary" %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+              
+            <table>
+        <% end %>
+        <div class="center">
+          <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %>
+          <%= link_to "キャンセル", user_path(@user, date: @first_day), class: "btn btn-lg btn-default" %>
+        </div>
+      <% end %>
+    </div> 
+
+
+  </div>
+</div>

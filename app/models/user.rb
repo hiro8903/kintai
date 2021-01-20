@@ -2,11 +2,6 @@ class User < ApplicationRecord
   # Attendanceモデルと１対多という関連付けさせ、ユーザーが削除された時に、
   # そのユーザーの持つAttendanceモデルのデータも一緒に削除されるようになります。
   has_many :attendances, dependent: :destroy
-  # has_many :over_time_requests, class_name:  "OverTimeRequest",
-  #                               foreign_key: "requester_id",
-  #                               dependent:   :destroy
-  # has_many :attendances, dependent: :destroy
-  # has_many :over_time_requests, dependent: :destroy
 
   # MonthlyRequestモデルと関連付けをさせている
   has_many :active_monthly_requests, class_name:  "MonthlyRequest",
@@ -20,22 +15,11 @@ class User < ApplicationRecord
   has_many :monthly_requesters, through: :passive_active_monthly_requests, source: :requester
 
   # OverTimeRequestモデルと関連付けをさせている
-  # has_many :active_over_time_requests, class_name:  "OverTimeRequest",
-  #                                 foreign_key: "requester_id",
-  #                                 dependent: :destroy
-  # has_many :over_time_requesting, through: :active_over_time_requests, source: :requested
-                                
-  # has_many :passive_active_over_time_requests, class_name: "OverTimeRequest",
-  #                                 foreign_key: "requested_id",
-  #                                 dependent:   :destroy
-  # has_many :over_time_requesters, through: :passive_over_time_requests, source: :requester
+  has_many :over_time_requests, foreign_key: "requested_id", dependent: :destroy
+  has_many :over_time_requests, foreign_key: "requester_id", dependent: :destroy
+  has_many :over_time_requesting, through: :over_time_requests, source: :requested
 
-  # has_many :active_over_time_requests, class_name:  "OverTimeRequest",
-  #                                 foreign_key: "requester_id",
-  #                                 dependent:   :destroy
-  # has_many :over_time_requesting, through: :active_over_time_requests, source: :requested
-
-
+  
   # ユーザーを古い順に並べる
   default_scope -> { order(created_at: :asc) }
   # 「remember_token」という仮想の属性を作成します。
@@ -59,7 +43,7 @@ class User < ApplicationRecord
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
-    # 渡された文字列のハッシュ値を返します。
+  # 渡された文字列のハッシュ値を返します。
   def User.digest(string)
     cost = 
       if ActiveModel::SecurePassword.min_cost
@@ -75,8 +59,7 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
   
-  
-    # ランダムなトークンを返します。
+  # ランダムなトークンを返します。
   def User.new_token
     SecureRandom.urlsafe_base64
   end

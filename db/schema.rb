@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20201228001528) do
     t.integer "requester_id"
     t.integer "requested_id"
     t.date "request_month"
-    t.integer "state"
+    t.integer "state", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "check", default: 0
@@ -45,6 +45,8 @@ ActiveRecord::Schema.define(version: 20201228001528) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["attendance_id"], name: "index_over_time_requests_on_attendance_id"
+    t.index ["requested_id"], name: "index_over_time_requests_on_requested_id"
+    t.index ["requester_id"], name: "index_over_time_requests_on_requester_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -53,8 +55,8 @@ ActiveRecord::Schema.define(version: 20201228001528) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2021-01-03 23:00:00"
-    t.datetime "work_time", default: "2021-01-03 22:30:00"
+    t.datetime "basic_work_time", default: "2021-01-19 23:00:00"
+    t.datetime "work_time", default: "2021-01-19 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

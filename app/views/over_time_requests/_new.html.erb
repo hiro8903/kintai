@@ -36,7 +36,7 @@
           </table>
             <div class="center">
               <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %> 
-              <%= link_to "キャンセル",  user_path(@user, date: @attendance.worked_on), class: "btn btn-lg btn-default" %>
+              <%= link_to "キャンセル",  user_path(@user, date: @attendance.worked_on.beginning_of_month), class: "btn btn-lg btn-default" %>
             </div>
           <% end %>
         </div>

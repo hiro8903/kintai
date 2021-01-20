@@ -4,7 +4,7 @@ class CreateMonthlyRequests < ActiveRecord::Migration[5.1]
       t.integer :requester_id
       t.integer :requested_id
       t.date :request_month
-      t.integer :state
+      t.integer :state, default: 0
 
       t.timestamps
     end

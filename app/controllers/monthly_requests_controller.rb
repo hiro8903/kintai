@@ -8,7 +8,8 @@ class MonthlyRequestsController < ApplicationController
     if @monthly_request.update_attributes(monthly_request_params)
       @monthly_request.update_attributes(state: "申請中")
       flash[:success] = "#{@monthly_request.requested.name}に#{@monthly_request.request_month}の申請をしました。"
-      redirect_to @user
+      debugger
+      redirect_to user_url(@user, date: @monthly_request.request_month)
     else
       render_to @user
     end
