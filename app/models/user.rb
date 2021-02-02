@@ -19,7 +19,11 @@ class User < ApplicationRecord
   has_many :over_time_requests, foreign_key: "requester_id", dependent: :destroy
   has_many :over_time_requesting, through: :over_time_requests, source: :requested
 
-  
+   # AttendanceEditRequestモデルと関連付けをさせている
+   has_many :attendance_edit_requests, foreign_key: "requested_id", dependent: :destroy
+   has_many :attendance_edit_requests, foreign_key: "requester_id", dependent: :destroy
+   has_many :attendance_edit_requesting, through: :attendance_edit_requests, source: :requested
+
   # ユーザーを古い順に並べる
   default_scope -> { order(created_at: :asc) }
   # 「remember_token」という仮想の属性を作成します。

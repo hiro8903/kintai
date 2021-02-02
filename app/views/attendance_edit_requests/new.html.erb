@@ -1,0 +1,197 @@
+<% provide(:title, @user.name) %>
+<%
+=begin%>
+ <%= render 'shared/_edit_request_error_messages', object: @attendance_edit_request %> 
+<%
+=end%>
+
+
+<%
+=begin%>
+ <% if @attendance_edit_requests.errors.any? %>
+  <div id="error_explanation">
+    <div class="alert alert-danger">
+      入力エラーが<%= @attendance_edit_requests.errors.count %>件ありました。
+    </div>
+    <ul>
+    <% @attendance_edit_requests.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %> 
+<%
+=end%>
+
+
+<%= form_with model: @attendances, url: user_attendance_edit_requests_path, local: true do |form| %>
+
+
+<div>
+  <h1>勤怠編集画面</h1>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>曜日</th>
+        <th>出社</th>
+        <th>退社</th>
+        <th>在社時間</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody>
+ <% @attendances.each do |day| %>
+    <%= fields_for 'attendance_edit_requests[]', day do |f| %>
+          <tr>
+            <td><%= l(day.worked_on, format: :short) %></td>
+            <td class="<%= "wday#{day.worked_on.wday}"%>"><%= $days_of_the_week[day.worked_on.wday] %></td>
+
+       
+              <% if Date.current < day.worked_on %>
+                <!--readonly: trueで編集を不可にする-->
+              
+                <td><%= f.time_field :started_at, readonly: true, class: "form-control" %></td>
+                <td><%= f.time_field :finished_at, readonly: true, class: "form-control" %></td>
+              <% else %>
+                <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at.present? %>
+                  <td><%= f.time_field :started_at, value: l(attendance_edit_request(day).started_at, format: :time), class: "form-control" %></td>
+                <% else %>
+                  <td><%= f.time_field :started_at, class: "form-control" %></td>
+                <% end %>
+                <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at.present? %>
+                  <td><%= f.time_field :finished_at, value: l(attendance_edit_request(day).finished_at, format: :time), class: "form-control" %></td>
+                <% else %>
+                  <td><%= f.time_field :finished_at, class: "form-control" %></td>
+                <% end %>
+              <% end %>
+              <td>            
+                <% if day.started_at.present? && day.finished_at.present? %>
+                  <%= working_times(day.started_at, day.finished_at) %>
+                <% end %>
+              </td>
+              <td><%= f.text_field :note, class: "form-control" %></td>
+              <% if attendance_edit_request(day).present? && attendance_edit_request(day).state == "申請中"%>
+                <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, selected: attendance_edit_request(day).requested_id, include_blank: true %></td>
+               <% else %>
+                <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %></td>
+               <% end %>
+              <td><%= attendance_edit_request(day).state if attendance_edit_request(day).present? %></td>
+        
+          </tr>
+               <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+          </tr>
+        
+
+<%
+=begin%>
+ <%= form_with model: @attendance_edit_requests, url: user_attendance_edit_requests_path, local: true do |form| %>
+
+  <% @attendance_edit_requests.collection.each do |edit_requests|%>
+    <%= fields_for 'attendance_edit_requests[]', "#" do |field| %>
+      <div class="field">
+        <%= field.label :name %>
+        <%=  %>
+      </div>
+
+      <div class="field">
+        <%= field.label :address %>
+        <%=  %>
+      </div>
+
+      <div class="field">
+        <%= field.label :age %>
+        <%=  %>
+      </div>
+      </br>
+    <% end %>
+  <% end %> 
+
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
+<%
+=end%>
+
+ 
+
+
+
+  <div class="actions">
+     <%= form.submit "まとめて更新", class: "btn btn-lg btn-primary" %>
+  </div>
+
+<% end %>
+<%= link_to 'Back', users_path %>
+
+
+
+
+<%
+=begin%>
+ 
+
+<% provide(:title, @user.name) %>
+
+<%= form_with(model: @attendance_edit_request, url: user_attendance_edit_requests_path( date: @first_day), local: true) do |f| %>
+<div>
+  <h1>勤怠編集画面</h1>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>曜日</th>
+        <th>出社</th>
+        <th>退社</th>
+        <th>在社時間</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @attendances.each do |day| %>
+       
+          <tr>
+          <%= hidden_field_tag :attendance_id, day.id  %>
+            <td><%= l(day.worked_on, format: :short) %></td>
+            <td class="<%= "wday#{day.worked_on.wday}"%>"><%= $days_of_the_week[day.worked_on.wday] %></td>
+            <% if Date.current < day.worked_on %>
+              <!--readonly: trueで編集を不可にする-->
+              <td><%= f.time_field :started_at, readonly: true, class: "form-control" %></td>
+              <td><%= f.time_field :finished_at, readonly: true, class: "form-control" %></td>
+            <% else %>
+              <td><%= f.time_field :started_at, class: "form-control" %></td>
+              <td><%= f.time_field :finished_at, class: "form-control" %></td>
+            <% end %>
+            <td>            
+              <% if day.started_at.present? && day.finished_at.present? %>
+                <%= working_times(day.started_at, day.finished_at) %>
+              <% end %>
+            </td>
+            <td><%= f.text_field :note, class: "form-control" %></td>
+            
+
+
+ <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %></td>   
+
+
+          </tr>
+        
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="center">
+  <%= f.submit "まとめて更新", class: "btn btn-lg btn-primary" %>
+  <%= link_to "キャンセル", user_path(@user, date: @first_day), class: "btn btn-lg btn-default" %>
+</div>
+<% end %>  
+<%
+=end%>

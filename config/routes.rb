@@ -22,7 +22,7 @@ Rails.application.routes.draw do
       get 'edit_basic_info'
       patch 'update_basic_info'
       get 'attendances/edit'
-      patch 'attendances/update_one_month'
+      patch 'attendances/update_one_month' # AttendanceEditRequests実装前に上長へ申請せずに更新できる機能として実装。
       get 'monthly_requests/request_confirmation'
     end
     resources :attendances, only: :update
@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     end
      get :monthly_requesting, :monthly_requesters  # 現在利用していない
     resources :over_time_requests
+    resources :attendance_edit_requests
   end
   
 end

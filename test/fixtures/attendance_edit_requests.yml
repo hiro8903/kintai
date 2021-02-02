@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attendance: one
+  requester_id: 1
+  requested_id: 1
+  edit_started_at: 2021-01-20 21:54:46
+  edit_finished_at: MyString
+  content: MyString
+
+two:
+  attendance: two
+  requester_id: 1
+  requested_id: 1
+  edit_started_at: 2021-01-20 21:54:46
+  edit_finished_at: MyString
+  content: MyString

@@ -9,5 +9,11 @@ module UsersHelper
     OverTimeRequest.find_by(attendance_id: day.id)
     # OverTimeRequest.find_by(attendance_id: id)
   end
+
+  def attendance_edit_request(day) 
+    # debugger
+    AttendanceEditRequest.find_by(attendance_id: day.id)
+   
+  end
   
 end

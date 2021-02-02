@@ -29,6 +29,7 @@ class AttendancesController < ApplicationController
   def edit
   end
 
+  # 勤怠の編集をまとめて更新。
   def update_one_month
     if attendances_update_only_one_side?
       ActiveRecord::Base.transaction do # トランザクションを開始します。

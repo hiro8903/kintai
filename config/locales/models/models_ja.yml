@@ -5,6 +5,7 @@ ja:
       attendance: 勤怠
       monthly_request: ひと月分の申請
       over_time_request: 残業申請
+      attendance_edit_request: 勤怠編集申請
     attributes:
         user:
           id: ID
@@ -36,5 +37,13 @@ ja:
           requested: 申請先上長ID
           end_scheduled_at: 残業終了予定時間
           content: 残業業務内容
-          state: 残業申請状態
+          state: 残業申請申請状態
           designated_work_end_time: 指定勤務終了時間 # Userモデルのdesignated_work_end_timeと同じ。エラー表示日本語化の為の設定。
+        attendance_edit_request:
+          attendance_id: 勤怠ID申請
+          requester_id: 申請者ID
+          requested_id: 申請先上長ID
+          started_at: 出勤時間
+          finished_at: 退勤時間
+          note: 備考
+          state: 勤怠変更申請状態
