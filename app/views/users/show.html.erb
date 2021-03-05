@@ -3,9 +3,9 @@
   <!--rowspan:縦結合、colspan：横結合-->
 
 <div><!-- ユーザー情報テーブル -->
-<% unless current_user?(@user) %>
-  <%= link_to "戻る", 'javascript:history.back()', class: "btn btn-lg btn-primary" %>
-<% end %>
+  <% unless current_user?(@user) %>
+    <%= link_to "戻る", 'javascript:history.back()', class: "btn btn-lg btn-primary" %>
+  <% end %>
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td><%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
@@ -40,26 +40,25 @@
       <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user, date: @first_day), remote: true, class: "with-notification" %>
     <% end %><br>
     <!-- 勤怠変更申請の通知 -->
-    <%= link_to "【勤怠変更申請のお知らせ】○件の通知があります", "#", remote: true, class: "with-notification" %><br>
+    <% if @attendance_edit_requests.count == 0 %>
+      【勤怠変更申請のお知らせ】
+    <% else %>
+      <%= link_to "【勤怠変更申請のお知らせ】#{@attendance_edit_requests.count}件の通知があります", edit_user_attendance_edit_request_path(@user), remote: true, class: "with-notification" %>
+    <% end %><br>
     <!-- 残業申請の通知 -->
     <%  if @over_time_requests.count == 0 %>
-    【残業申請のお知らせ】
+      【残業申請のお知らせ】
     <% else %>
       <%= link_to "【残業申請のお知らせ】#{@over_time_requests.count}件の通知があります", edit_user_over_time_request_path(@user), remote: true, class: "with-notification" %>
     <% end %><br>
-    <%
-=begin%>
- <%= link_to "勤怠を編集", attendances_edit_user_path(date: @first_day), class: "btn btn-primary" %> 
-<%
-=end%>
     <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
     <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
   <% end %>
-  <%= AttendanceEditRequest.all.count if AttendanceEditRequest.all.present? %>
 </div>
 
 <div><!-- 勤怠テーブル -->
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+
     <thead>
       <tr>
         <th rowspan = "3">残業申請</th>
@@ -88,6 +87,7 @@
         <th>分</th>
       </tr>
     </thead>
+
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
@@ -106,51 +106,36 @@
             <% end %>
           </td>
           <td><!-- 出社ー時 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? %>
+          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
             <%= l(attendance_edit_request(day).started_at, format: :hour) %>
           <% else %>
             <%= l(day.started_at, format: :hour) if day.started_at.present? %>
           <% end %>
           </td>
           <td><!-- 出社ー分 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? %>
+          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
             <%= every_15_minutes(attendance_edit_request(day).started_at) %>
           <% else %>
             <%= every_15_minutes(day.started_at) if day.started_at.present? %>
           <% end %>
           </td>
           <td><!-- 退社ー時 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? %>
+          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
             <%= l(attendance_edit_request(day).finished_at, format: :hour) %>
           <% else %>
             <%= l(day.finished_at, format: :hour) if day.finished_at.present? %>
           <% end %>
           </td>
           <td><!-- 退社ー分 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? %>
+          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
             <%= every_15_minutes(attendance_edit_request(day).finished_at) %>
           <% else %>
             <%= every_15_minutes(day.finished_at) if day.finished_at.present? %>
           <% end %>
           </td>
           <td><!-- 在社時間 時間 -->
-            <%
-=begin%>
- <% if day.started_at.present? && day.finished_at.present? %> 
-<%
-=end%>
-              <%
-=begin%>
- <%= str_times = working_times(day.started_at, day.finished_at) %> 
-<%
-=end%>
-<%= str_times = working_time(day, attendance_edit_request(day)) %>
+              <%= str_times = working_time(day, attendance_edit_request(day)) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
-            <%
-=begin%>
- <% end %> 
-<%
-=end%>
           </td>
           <td><!-- 備考 -->
             <%= attendance_edit_request(day).note if attendance_edit_request(day).present? %>
@@ -181,19 +166,23 @@
               <% else over_time_request(day).state == "否認" %>
                 残業否認
               <% end %>
-            <% end %>
-            <!-- 勤怠編集情報があればいずれかを表示 未実装 -->
+            <% end %><br>
+            <!-- 勤怠編集情報があればいずれかを表示 -->
+            <% if attendance_edit_request(day).present? %>
+              <% if attendance_edit_request(day).state == "なし" %>
+                <!-- 表示なし -->
+              <% elsif attendance_edit_request(day).state == "申請中" %>
+                勤怠変更申請中<br>
+              <% elsif attendance_edit_request(day).state == "承認" %>
+                勤怠変更承認済
+              <% else attendance_edit_request(day).state == "否認" %>
+                勤怠変更否認
+              <% end %>
+            <% end %><br>
           </td>
-      <td>
-      <%= day.attendance_edit_request.id if attendance_edit_request(day).present? %>
-      <%= attendance_edit_request(day).attendance.worked_on if attendance_edit_request(day).present? %>
-      <%= attendance_edit_request(day).attendance.id if attendance_edit_request(day).present? %>
-      <%= attendance_edit_request(day).id if attendance_edit_request(day).present? %>
-      <%= attendance_edit_request(day).started_at if attendance_edit_request(day).present? %>
-      </td>
-        </tr>
       <% end %>
     </tbody>
+
     <tfoot>
       <td colspan = "1"><!-- 総合勤務時間 -->
         <%= basic_work_times_sum(@user.basic_work_time, @worked_sum) %>
@@ -225,8 +214,8 @@
           <% end %>
         </div>
       </td>
-
     </tfoot>
+
   </table>
 </div>
 
@@ -238,4 +227,5 @@
 <div id="over-time-request-new" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
   <!-- 申請された残業を確認する -->
 <div id="over-time-request-edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-
+  <!-- 申請された勤怠変更申請を確認する -->
+<div id="edit-attendance-edit-requests" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

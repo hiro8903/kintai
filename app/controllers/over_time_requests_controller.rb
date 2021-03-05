@@ -38,7 +38,7 @@ class OverTimeRequestsController < ApplicationController
   def update
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       over_time_requests_params.each do |id, item|
-      request = OverTimeRequest.find(id)
+        request = OverTimeRequest.find(id)
         if params[:over_time_requests][id][:check] == "1" # チェックボックスにチェックが入っているところのみ更新する。
           request.update_attributes!(item) 
         end
@@ -47,7 +47,7 @@ class OverTimeRequestsController < ApplicationController
       flash[:success] = "残業申請を更新しました。"
       redirect_to user_url(current_user)
     rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+      flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
       if request.errors.any?
         request.errors.full_messages.each do |msg| 
           flash[:danger] = "#{msg}"

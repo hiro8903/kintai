@@ -24,12 +24,16 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-    @monthly_requests = MonthlyRequest.where(requested_id: @user.id, state:2)
-    @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
+    # 上長表示関連
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
-    # debugger
+    # ひと月の勤怠申請関連
+    @monthly_requests = MonthlyRequest.where(requested_id: @user.id, state:2)
+    @monthly_request = MonthlyRequest.find_by(requester_id: @user.id,request_month: @first_day)
+    # 残業申請関連
     @over_time_requests = OverTimeRequest.where(requested_id: @user.id, state:2)
+    # 勤怠編集申請関連
+    @attendance_edit_requests = AttendanceEditRequest.where(requested_id: @user.id, state: 2)
   end
   
   def show_one_week
@@ -104,7 +108,7 @@ class UsersController < ApplicationController
     # 管理権限者、または現在ログインしているユーザー、または申請先の上長を許可します。
     def admin_or_correct_user_or_requesting_user
       @user = User.find(params[:id]) if @user.blank?
-      unless current_user?(@user) || current_user.admin? || @user.monthly_requesting.find_by(id:current_user) == current_user || @user.over_time_requesting.find_by(id:current_user) == current_user
+      unless current_user?(@user) || current_user.admin? || @user.monthly_requesting.find_by(id:current_user) == current_user || @user.over_time_requesting.find_by(id:current_user) == current_user || @user.attendance_edit_requesting.find_by(id:current_user) == current_user
         flash[:danger] = "権限がありません。"
         redirect_to(root_url)
       end  

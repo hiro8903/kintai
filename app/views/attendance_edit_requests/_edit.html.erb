@@ -1,0 +1,110 @@
+<% provide(:class_text, 'basic-info') %>
+<% provide(:button_text, '更新') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+
+ <div class="modal-body">
+      <%= form_with(url: user_attendance_edit_request_path,local: true, method: :patch) do |f| %> 
+        <% @requesters.each do |user| %>
+          <h3 class="center">【<%= user.name %>からの勤怠変更申請】</h3>
+            <table class="table table-bordered center">
+              <tr>
+                <td rowspan = "3">日付</td>
+                <td rowspan = "3">曜日</td>
+                <td colspan = "4">変更前</td>
+                <td colspan = "4">変更後</td>
+                <td rowspan = "3">備考</td>
+                <td rowspan = "3">指示者確認㊞</td>
+                <td rowspan = "3">変更</td>
+                <td rowspan = "3">勤怠を確認する</td>
+              </tr>
+              
+              <tr>
+                <td colspan = "2">出社</td>
+                <td colspan = "2">退社</td>
+                <td colspan = "2">出社</td>
+                <td colspan = "2">退社</td>
+              </tr>
+
+              <tr>
+                <td>時</td>
+                <td>分</td>
+                <td>時</td>
+                <td>分</td>
+                <td>時</td>
+                <td>分</td>
+                <td>時</td>
+                <td>分</td>
+              </tr>
+
+ <% requests_for_each_user(user.id).each do |request| %>
+                <tr>
+                  <%= f.fields_for "attendance_edit_requests[]", request do |fr| %>
+                    <!-- 日付・曜日 -->
+                    <td><%= l(request.attendance.worked_on, format: :short) %></td>
+                    <td class="<%= "wday#{request.attendance.worked_on.wday}"%>">
+                      <%= $days_of_the_week[request.attendance.worked_on.wday] %>
+                    </td>
+                    <!-- 変更前時間 -->
+                    <td><%= l(request.attendance.started_at, format: :hour) if request.attendance.started_at.present? %></td>
+                    <td><%= every_15_minutes(request.attendance.started_at) if request.attendance.started_at.present? %></td>
+                    <td><%= l(request.attendance.finished_at, format: :hour) if request.attendance.finished_at.present? %></td>
+                    <td><%= every_15_minutes(request.attendance.finished_at) if request.attendance.finished_at.present? %></td>
+                    <!-- 変更後時間 -->
+                    <td><%= l(request.started_at, format: :hour) if request.started_at.present? %></td>
+                    <td><%= every_15_minutes(request.started_at) if request.started_at.present? %></td>
+                    <td><%= l(request.finished_at, format: :hour) if request.finished_at.present? %></td>
+                    <td><%= every_15_minutes(request.finished_at) if request.finished_at.present? %></td>
+                    <!-- 備考 -->
+                    <td><%= request.note if request.note.present? %></td>
+                    <!-- 指示者確認 -->
+                    <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
+                    <!-- 変更 -->
+                    <td><%= fr.check_box 'check', {checked: false}  %></td>
+                    <!-- 勤怠を確認する -->
+                    <td><%= link_to "確認", user_path(request.requester_id, date: request.attendance.worked_on.beginning_of_month), class: "btn btn-primary" %></td>
+<%
+=begin%>
+                    <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
+                    <td><%= fr.check_box 'check', {checked: false}  %></td>  
+                    <td><%= link_to "確認", user_path(request.requester_id, date: request.attendance.worked_on.beginning_of_month), class: "btn btn-primary" %></td>
+<%
+=end%>
+
+                    <%
+=begin%>
+ <td><%= l(request.end_scheduled_at, format: :time) %></td>
+                    <td><%= l(request.requester.designated_work_end_time, format: :time) %></td>
+                  
+                    <td><%= request_over_time(request)  %></td>
+                    <td><%= fr.select :state, ApplicationRecord.states.keys.to_a, selected: request.state %></td>
+                    <td><%= fr.check_box 'check', {checked: false}  %></td>  
+                    <td><%= link_to "確認", user_path(request.requester_id, date: request.attendance.worked_on.beginning_of_month), class: "btn btn-primary" %></td> 
+<%
+=end%>
+                  <% end %>
+                </tr>
+              <% end %> 
+
+              
+            <table>
+        <% end %>
+        <div class="center">
+          <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary" %>
+          <%= link_to "キャンセル", user_path(@user, date: @first_day), class: "btn btn-lg btn-default" %>
+        </div>
+      <% end %>
+    </div>  
+
+
+
+  </div>
+</div>

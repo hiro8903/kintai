@@ -1,4 +1,6 @@
 class AttendancesController < ApplicationController
+  # AttendanceEditRequestsControllerを作成した為、利用しなくなった。
+
   include AttendancesHelper
   before_action :set_user, only: :edit
   before_action :logged_in_user, only: [:update, :edit]
