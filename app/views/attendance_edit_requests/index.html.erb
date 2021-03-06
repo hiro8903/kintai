@@ -1,0 +1,50 @@
+<% provide(:title, @user.name) %>
+
+<div class="col">
+  <!-- 見出し -->
+  <h1>勤怠ログ</h1>
+
+  <!--  入力フォームをform_withで作成  -->
+  <div id="ajax-request">
+    <!-- form_withのパスを「ajax_updateアクション」に紐付ける -->
+    <%= form_with url: user_attendance_edit_requests_ajax_update_path do |f| %>
+      <!--  入力フォーム  -->
+      <%= f.text_field :data %>
+      <!--  送信ボタン  -->
+      <%= f.submit 'Post Ajax' %>
+    <% end %>
+  </div>
+
+  <!--  デフォルトで表示されている内容  -->
+  <div id="ajax-test">
+  </div>
+
+  <!--  勤怠ログ（承認済みの勤怠編集申請）  -->
+  <div>
+    <table class="table table-bordered center" id="table-attendances">
+      <thead>
+      <tr>
+        <th>日付</th>
+        <th>変更前出社時間</th>
+        <th>変更前退社時間</th>
+        <th>変更後出社時間</th>
+        <th>変更後退社時間</th>
+        <th>指示者</th>
+        <th>承認日</th>
+      </tr>
+      </thead>
+      <% @attendance_edit_logs.each do |log| %>
+        <tr>
+          <td><%= log.attendance.worked_on %></td>
+          <td><%= l(log.attendance.started_at, format: :time) if log.attendance.started_at.present? %></td>
+          <td><%= l(log.attendance.finished_at, format: :time) if log.attendance.finished_at.present? %></td>
+          <td><%= l(log.started_at, format: :time) %></td>
+          <td><%= l(log.finished_at, format: :time) %></td>
+          <td><%= log.requested.name %></td>
+          <td><%= l(log.updated_at, format: :default) %></td>
+        </tr>
+      <% end %>
+    
+    <table>
+  </div>
+</div>

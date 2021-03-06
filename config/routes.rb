@@ -33,7 +33,8 @@ Rails.application.routes.draw do
     end
      get :monthly_requesting, :monthly_requesters  # 現在利用していない
     resources :over_time_requests
-    resources :attendance_edit_requests
+    resources :attendance_edit_requests # 勤怠編集申請
+      post 'attendance_edit_requests/ajax_update', to: 'attendance_edit_requests#ajax_update' # ajaxのアクション
   end
   
 end
