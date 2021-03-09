@@ -1,0 +1,32 @@
+ <div>
+    <table class="table table-bordered table-striped center" id="table-attendances">
+      <thead>
+      <tr>
+        <th>日付</th>
+        <th>変更前出社時間</th>
+        <th>変更前退社時間</th>
+        <th>変更後出社時間</th>
+        <th>変更後退社時間</th>
+        <th>指示者</th>
+        <th>承認日</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        <% @attendance_edit_logs.each do |log| %>
+        <% if log.attendance.worked_on.year == @year.to_i && log.attendance.worked_on.month == @month.to_i %>
+            <tr>
+              <td><%= log.attendance.worked_on %></td>
+              <td><%= l(log.attendance.started_at, format: :time) if log.attendance.started_at.present? %></td>
+              <td><%= l(log.attendance.finished_at, format: :time) if log.attendance.finished_at.present? %></td>
+              <td><%= l(log.started_at, format: :time) %></td>
+              <td><%= l(log.finished_at, format: :time) %></td>
+              <td><%= log.requested.name %></td>
+              <td><%= l(log.updated_at, format: :default) %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    
+    <table>
+  </div> 

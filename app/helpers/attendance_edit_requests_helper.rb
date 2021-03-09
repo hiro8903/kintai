@@ -5,4 +5,14 @@ module AttendanceEditRequestsHelper
     AttendanceEditRequest.find_by(attendance_id: day.id)
   end
   
+  # 編集ログの申請日付から紐付けられたAttendanceを返す。
+  def attendance_day(edit_log)
+    @edit_log_attendance = Attendance.find(edit_log.attendance_id)
+  end
+
+  # Attendanceの勤怠日月と与えられた年月が等しいか判別する。
+  def match_of_year_and_month?(edit_log,yerar,month)
+    attendance_day(edit_log)
+    @edit_log_attendance.worked_on.year == year && @edit_log_attendance.worked_on.month == month
+  end
 end

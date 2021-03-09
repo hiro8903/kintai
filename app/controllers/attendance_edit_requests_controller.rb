@@ -1,7 +1,7 @@
 class AttendanceEditRequestsController < ApplicationController
   protect_from_forgery with: :exception
 
-  before_action :set_user_from_user_id, only: [:new, :index, :create, :edit] 
+  before_action :set_user_from_user_id, only: [:new, :index, :create, :edit, :edited_table] 
   before_action :logged_in_user, only: [:new, :create]
   before_action :admin_or_correct_user, only: [:new, :create]
   before_action :set_one_month, only: [:new, :create, :edit]
@@ -15,12 +15,23 @@ class AttendanceEditRequestsController < ApplicationController
   def index
     
     @attendance_edit_logs = @user.attendance_edit_requests.where(state: "承認")
+
     # debugger
   end
 
-  def ajax_update
+  # def edited_table
+  #   debugger
+  # end
+
+  def edited_table
     # indexページにある「data(入力フォーム)」のパラメーターを@textに代入
+
     @text = params[:data]
+    @year = params["date"]["year"]
+    @month = params["date"]["month"]
+    @attendance_edit_logs = @user.attendance_edit_requests.where(state: "承認")
+
+    # debugger
   end
 
   # 勤怠の編集リクエストを一括登録。

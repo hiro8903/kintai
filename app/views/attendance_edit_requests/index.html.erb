@@ -5,22 +5,25 @@
   <h1>勤怠ログ</h1>
 
   <!--  入力フォームをform_withで作成  -->
-  <div id="ajax-request">
-    <!-- form_withのパスを「ajax_updateアクション」に紐付ける -->
-    <%= form_with url: user_attendance_edit_requests_ajax_update_path do |f| %>
+  <div id="edited-table-request">
+    <%= form_with url: user_attendance_edit_requests_edited_table_path do |f| %>
       <!--  入力フォーム  -->
-      <%= f.text_field :data %>
+      <%= select_year(Date.today) %><br>
+      <%= select_month(Date.today)%>
       <!--  送信ボタン  -->
-      <%= f.submit 'Post Ajax' %>
+      <%= f.submit "検索" %>
     <% end %>
   </div>
 
   <!--  デフォルトで表示されている内容  -->
-  <div id="ajax-test">
+  <div id="edited-table">
+
   </div>
 
   <!--  勤怠ログ（承認済みの勤怠編集申請）  -->
-  <div>
+  <%
+=begin%>
+ <div>
     <table class="table table-bordered center" id="table-attendances">
       <thead>
       <tr>
@@ -46,5 +49,7 @@
       <% end %>
     
     <table>
-  </div>
+  </div> 
+<%
+=end%>
 </div>
