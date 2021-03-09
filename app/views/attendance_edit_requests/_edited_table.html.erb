@@ -13,8 +13,10 @@
       </thead>
 
       <tbody>
+        <% i = 0 %>
         <% @attendance_edit_logs.each do |log| %>
-        <% if log.attendance.worked_on.year == @year.to_i && log.attendance.worked_on.month == @month.to_i %>
+          <% if log.attendance.worked_on.year == @year.to_i && log.attendance.worked_on.month == @month.to_i %>
+          <% i = i + 1 %> 
             <tr>
               <td><%= log.attendance.worked_on %></td>
               <td><%= l(log.attendance.started_at, format: :time) if log.attendance.started_at.present? %></td>
@@ -25,6 +27,11 @@
               <td><%= l(log.updated_at, format: :default) %></td>
             </tr>
           <% end %>
+        <% end %>
+        <% if i == 0 %> 
+          <td colspan = "7">
+          <%= "#{@year}年#{@month}月の勤怠ログ（承認済）はありません。" %>
+          </td>
         <% end %>
       </tbody>
     

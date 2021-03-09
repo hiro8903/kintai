@@ -17,39 +17,6 @@
 
   <!--  デフォルトで表示されている内容  -->
   <div id="edited-table">
-
+    <!--  デフォルト無し。年月を選択した勤怠ログ（承認済）が表示される。  -->
   </div>
-
-  <!--  勤怠ログ（承認済みの勤怠編集申請）  -->
-  <%
-=begin%>
- <div>
-    <table class="table table-bordered center" id="table-attendances">
-      <thead>
-      <tr>
-        <th>日付</th>
-        <th>変更前出社時間</th>
-        <th>変更前退社時間</th>
-        <th>変更後出社時間</th>
-        <th>変更後退社時間</th>
-        <th>指示者</th>
-        <th>承認日</th>
-      </tr>
-      </thead>
-      <% @attendance_edit_logs.each do |log| %>
-        <tr>
-          <td><%= log.attendance.worked_on %></td>
-          <td><%= l(log.attendance.started_at, format: :time) if log.attendance.started_at.present? %></td>
-          <td><%= l(log.attendance.finished_at, format: :time) if log.attendance.finished_at.present? %></td>
-          <td><%= l(log.started_at, format: :time) %></td>
-          <td><%= l(log.finished_at, format: :time) %></td>
-          <td><%= log.requested.name %></td>
-          <td><%= l(log.updated_at, format: :default) %></td>
-        </tr>
-      <% end %>
-    
-    <table>
-  </div> 
-<%
-=end%>
 </div>
