@@ -63,6 +63,13 @@ class UsersController < ApplicationController
       flash[:success] = "ユーザー情報を更新しました。"
       redirect_to users_url
     else
+      if params[:user_search]
+        @users = User.where('name LIKE ?', "%#{params[:user_search]}%").paginate(page: params[:page])
+        @page_title ="検索結果"
+      else
+        @users = User.paginate(page: params[:page])
+        @page_title ="ユーザー一覧"
+      end
       render :index      
     end
     
@@ -90,7 +97,7 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password, :affiliation, :password_confirmation)
+      params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid, :basic_work_time, :work_time, :password,  :password_confirmation)
     end
     
     def basic_info_params

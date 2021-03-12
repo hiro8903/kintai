@@ -37,6 +37,8 @@ class User < ApplicationRecord
                     format: { with: VALID_EMAIL_REGEX }, # formatというオプション
                     uniqueness: true
   validates :affiliation, length: { in: 2..50 }, allow_blank: true
+  validates :employee_number, allow_blank: true, uniqueness: true
+  validates :uid, allow_blank: true, uniqueness: true
   validates :basic_work_time, presence: true
   validates :work_time, presence: true
   # has_secure_password は入力されたパスワードをそのままの文字列ではなく、

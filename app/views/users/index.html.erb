@@ -1,7 +1,8 @@
 <% provide(:title, 'All Users') %>
 <% provide(:class_text, 'user--edit') %>
-<% provide(:button_text, '更新') %>
+<% provide(:button_text, '編集する') %>
 <h1><%= @page_title %></h1>
+
 
 <div class="search">
   <%= form_with url:'/users', method: :get, local: true do |f| %>
@@ -23,7 +24,11 @@
 
       <tbody>
       <% @users.each do |user| %>
+      
         <tr>
+   
+        
+  
           <td><%= link_to user.name, user %>
             <% if current_user.admin? && !current_user?(user) %><br> 
               |<%= link_to "削除", user, method: :delete, 
@@ -41,7 +46,7 @@
                     <div class="card-body">
                       <div class="row">
                         <%= form_with(model: user, local: true, method: :patch) do |f| %>
-                          <%= render 'shared/error_messages', object: user %>
+                          
 
                           <%= f.label :name, class: "label-#{yield(:class_text)}" %>
                           <%= f.text_field :name, class: "form-control" %>
@@ -51,6 +56,12 @@
                           
                           <%= f.label :affiliation, class: "label-#{yield(:class_text)}" %>
                           <%= f.text_field :affiliation, class: "form-control" %>
+
+                          <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
+                          <%= f.text_field :employee_number, class: "form-control" %>
+
+                          <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
+                          <%= f.text_field :uid, class: "form-control" %>
 
                           <%= f.label :password, class: "label-#{yield(:class_text)}" %>
                           <%= f.password_field :password, class: "form-control" %>
