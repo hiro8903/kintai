@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       get 'attendances/edit'
       patch 'attendances/update_one_month' # AttendanceEditRequests実装前に上長へ申請せずに更新できる機能として実装。
       get 'monthly_requests/request_confirmation'
+      get 'attending_index'
     end
     resources :attendances, only: :update
     resources :monthly_requests do

@@ -1,0 +1,21 @@
+<% provide(:title, 'Attending Users') %>
+
+<h1>出勤中社員一覧</h1>
+
+<div>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+        <tr>
+          <th>社員番号</th>
+          <th>名前</th>
+        </tr>
+    </thead>
+
+    <% @today_attendances.each do |today_attendance| %>
+      <tbody>
+        <td><%= today_attendance.user.employee_number %></td>
+        <td><%= today_attendance.user.name %></td>
+      </tbody>
+    <% end %>
+  </table>
+</div>

@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :show_one_week]
+  before_action :set_user, only: [:show, :edit, :attending_index, :update, :destroy, :edit_basic_info, :update_basic_info, :show_one_week]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
   before_action :correct_user, only: [:edit]
-  before_action :admin_user, only: [:update, :destroy, :edit_basic_info, :update_basic_info, :index]
+  before_action :admin_user, only: [:update, :destroy, :edit_basic_info, :update_basic_info, :index, :attending_index]
   before_action :admin_or_correct_user, only: [:edit]
   before_action :admin_or_correct_user_or_requesting_user, only:[:show]
   before_action :set_one_month, only: [:show, :show_one_week]
@@ -20,6 +20,12 @@ class UsersController < ApplicationController
       @page_title ="ユーザー一覧"
     end
     
+  end
+
+  # 出勤中社員一覧ページを表示
+  def attending_index
+    today = Date.today
+    @today_attendances = Attendance.where(worked_on: today, finished_at: nil).where.not(started_at: nil)
   end
 
   def show
