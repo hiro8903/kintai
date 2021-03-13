@@ -47,7 +47,11 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
+    users = User.all
+    # debugger
+    max_employee_number = users.select("employee_number").order("employee_number desc").last.employee_number
+    # 社員番号の初期値に「すでに使用されている最大番号＋１」を入れておく。
+    @user = User.new(employee_number: max_employee_number + 1)
   end
 
   def create
