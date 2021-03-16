@@ -1,0 +1,4 @@
+$("textarea").val("");
+$("input").val("");
+$(".card-body").slideDown();
+$('.bases-table').html("<%= escape_javascript(render 'bases', bases: @bases) %>")

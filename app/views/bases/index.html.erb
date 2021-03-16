@@ -1,0 +1,54 @@
+<% provide(:title, 'All Bases') %>
+
+
+<h1>拠点一覧</h1>
+
+<div>
+  <% if @msgs.present? %>
+    <div id="error_explanation">
+      <div class="alert alert-danger">
+        <% @msgs.each do |msg| %>
+          <%= msg %><br>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- 拠点一覧テーブル -->
+<div class="accordion" id="accordion">
+<div>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+        <tr>
+          <th><!-- 空白 --></th>
+          <th><!-- 空白 --></th>
+          <th>拠点番号</th>
+          <th>拠点名</th>
+          <th>勤怠種類</th>
+        </tr>
+    </thead>
+    <%= render "bases" , bases: @bases %>
+  </table>
+</div>
+
+<!-- 拠点作成 -->
+<div>
+
+    <div class="card">
+      <div class="card-header" id="heading">
+        <h5 class="mb-0">
+          <button class="btn btn-lg btn-primary collapsed" type="button" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">
+            拠点情報追加
+          </button>
+        </h5>
+      </div>
+      <div id="collapse" class="collapse" aria-labelledby="heading" data-parent="#accordion">
+      <div class="card-body col-md-3">
+        <%= render 'form' , base: @base %>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -6,6 +6,7 @@ ja:
       monthly_request: ひと月分の申請
       over_time_request: 残業申請
       attendance_edit_request: 勤怠編集申請
+      base: 拠点
     attributes:
         user:
           id: ID
@@ -49,3 +50,7 @@ ja:
           finished_at: 退勤時間
           note: 備考
           state: 勤怠変更申請状態
+        base:
+          name: 拠点名
+          number: 拠点番号
+          attendance_type: 勤怠種類

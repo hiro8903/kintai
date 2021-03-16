@@ -1,0 +1,15 @@
+<div class="form-row">
+<%= form_with(model: base, local: true) do |f| %>
+
+  <%= f.label :number, class: "label-#{yield(:class_text)}" %>
+  <%= f.number_field :number, min: 1, class: "form-control " %>
+
+  <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%= f.label :attendance_type, class: "label-#{yield(:class_text)}" %><br>
+  <%= f.select :attendance_type, ["出勤", "退勤"],{}, class: "form-control" %>
+
+  <%= f.submit yield(:button_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
+<% end %>
+</div>

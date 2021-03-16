@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   post   '/login', to: 'sessions#create'  # セッション作成（ログイン）
   delete '/logout', to: 'sessions#destroy'  # セッション削除（ログアウト）
 
+  # 拠点一覧ページ
+  resources :bases
 
   resources :users do
   get '/users/:id', to: 'users#show_one_week', as: 'show_one_week'

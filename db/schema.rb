@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210312131542) do
+ActiveRecord::Schema.define(version: 20210313152358) do
 
   create_table "attendance_edit_requests", force: :cascade do |t|
     t.integer "attendance_id"
@@ -37,6 +37,14 @@ ActiveRecord::Schema.define(version: 20210312131542) do
     t.datetime "updated_at", null: false
     t.integer "requested_id"
     t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
+  create_table "bases", force: :cascade do |t|
+    t.string "name"
+    t.integer "number"
+    t.string "attendance_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "monthly_requests", force: :cascade do |t|
@@ -71,8 +79,8 @@ ActiveRecord::Schema.define(version: 20210312131542) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2021-03-12 23:00:00"
-    t.datetime "work_time", default: "2021-03-12 22:30:00"
+    t.datetime "basic_work_time", default: "2021-03-15 23:00:00"
+    t.datetime "work_time", default: "2021-03-15 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

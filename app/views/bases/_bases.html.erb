@@ -1,0 +1,32 @@
+<% provide(:class_text, 'base-edit') %>
+<% provide(:button_text, '登録する') %>
+
+<% if bases.present? %>
+<% bases.each do |base| %>
+  <tbody>
+    <td>
+      <div class="card-body">
+        <div class="card-header" id="headingEdit<%= base.id %>">
+          <h5 class="mb-0">
+            <button class="btn btn-primary collapsed" type="button" data-toggle="collapse" data-target="#collapseEdit<%= base.id %>" aria-expanded="false" aria-controls="collapse">
+             修正
+            </button>
+          </h5>
+        </div>
+        <div id="collapseEdit<%= base.id %>" class="collapse" aria-labelledby="headingEdit<%= base.id %>" data-parent="#accordion">
+          <div class="card-body">
+            <%= render 'form' ,base: base %>
+          </div>
+        </div>
+      </div>
+    </td>
+    <td>
+      <%= link_to "削除", base, method: :delete, 
+                        data: { confirm: "#{base.name}を削除してよろしいですか？" },class: "btn btn-primary" %>
+    </td>
+    <td><%= base.number %></td>
+    <td><%= base.name %></td>
+    <td><%= base.attendance_type %></td>
+  </tbody>
+<% end %>
+<% end %>
