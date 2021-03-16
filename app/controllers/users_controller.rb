@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: [:show, :show_one_week]
   # before_action :rs, only: [:show]
   before_action :set_one_week , only: :show_one_week
+  require 'csv'
   
   def index
  
@@ -39,7 +40,18 @@ class UsersController < ApplicationController
     # 残業申請関連
     @over_time_requests = OverTimeRequest.where(requested_id: @user.id, state:2)
     # 勤怠編集申請関連
+    # 現在のユーザーに対して勤怠編集申請中のもの
     @attendance_edit_requests = AttendanceEditRequest.where(requested_id: @user.id, state: 2)
+    # respond_to はリクエストに応じた処理を行うメソッドです。
+    # 通常時はhtmlをリクエストしているので、処理は記述していません。
+    # viewのlink_toでformatをcsvとして指定しているので、
+    # リンクを押すとsend_attendances_csv(@attendances)の処理を行います。
+    respond_to do |format|
+      format.html
+      format.csv do |csv|
+        send_attendances_csv(@attendances)
+      end
+    end
   end
   
   def show_one_week
@@ -130,5 +142,35 @@ class UsersController < ApplicationController
         flash[:danger] = "権限がありません。"
         redirect_to(root_url)
       end  
+    end
+
+    def send_attendances_csv(attendances)
+      # CSV.generateとは、対象データを自動的にCSV形式に変換してくれるCSVライブラリの一種
+      csv_data = CSV.generate do |csv|
+        # %w()は、空白で区切って配列を返します
+        # debugger
+        column_names = %w(日時 出社時間 退社時間)
+        # csv << column_namesは表の列に入る名前を定義します。
+        csv << column_names
+        # column_valuesに代入するカラム値を定義します。
+        attendances.each do |attendance|
+          # 勤怠編集申請が承認されていた場合は、CSVファイルに反映させる。
+          if attendance.attendance_edit_request.present? && attendance.attendance_edit_request.state == "承認"
+            column_values = [ attendance.worked_on,
+                              attendance.attendance_edit_request.started_at,
+                              attendance.attendance_edit_request.finished_at,
+                            ]
+          else # 勤怠編集申請が無い、または勤怠編集申請が承認されていない場合は、初期値をCSVファイルに反映させる。
+            column_values = [ attendance.worked_on,
+                              attendance.started_at,
+                              attendance.finished_at,
+                            ]
+          end
+          # csv << column_valueshは表の行に入る値を定義します。
+          csv << column_values
+        end
+      end
+      # csv出力のファイル名を定義します。
+      send_data(csv_data, filename: "#{@user.name}-#{@first_day.year}年#{@first_day.month}月の勤怠情報.csv")
     end
 end

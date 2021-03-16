@@ -53,7 +53,7 @@
     <% end %><br>
     <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
     <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
-    <%= link_to "CSV出力", "#", class: "btn btn-primary" %><br>
+    <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
     <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
   <% end %>
 </div>
