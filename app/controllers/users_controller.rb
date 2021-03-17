@@ -8,10 +8,8 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: [:show, :show_one_week]
   # before_action :rs, only: [:show]
   before_action :set_one_week , only: :show_one_week
-  require 'csv'
   
   def index
- 
     #キーワードが入力されていれば、whereメソッドとLIKE検索（部分一致検索）を組み合わせて、必要な情報のみ取得する。
     if params[:user_search]
       @users = User.where('name LIKE ?', "%#{params[:user_search]}%").paginate(page: params[:page])
@@ -20,7 +18,33 @@ class UsersController < ApplicationController
       @users = User.paginate(page: params[:page])
       @page_title ="ユーザー一覧"
     end
-    
+  end
+
+  # CSVファイルをインポートしユーザーを登録する
+  def import
+    # 現在登録済みのユーザー数
+    current_users_count = User.count
+    if params[:file].blank? # ファイルが選択されていない場合
+      flash[:danger] = "ファイルを選択してください。"
+      redirect_to users_url
+    else # CSVファイルが選択されている場合
+      # CSVファイルを読み込む
+      User.import(params[:file])
+      # CSVファイル内のユーザー数をcountに代入
+      count = 0
+      CSV.foreach(params[:file].path, headers: true) do |row|
+        count += 1
+      end
+      # 登録完了後のユーザー数
+      after_users_count = User.count
+      # 登録に成功したユーザー数
+      success_users_count = after_users_count - current_users_count
+      # 登録に失敗したユーザー数
+      error_users_count = count - success_users_count
+      flash[:success] = "#{success_users_count}件のインポートに成功しました。" if success_users_count > 0
+      flash[:danger] = "#{error_users_count}件のインポートに失敗しました。" if error_users_count > 0
+      redirect_to users_url
+    end
   end
 
   # 出勤中社員一覧ページを表示
@@ -67,6 +91,7 @@ class UsersController < ApplicationController
   end
 
   def create
+    debugger
     @user = User.new(user_params)
     if @user.save
       log_in @user # 保存成功後、ログインする。

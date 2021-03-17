@@ -1,6 +1,10 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
   enum state: { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 }
+  # CSVファイルのインポートに必要
+  require 'rails/all'
+    # CSVファイルのインポート・出力に必要
+  require 'csv'
 
   # 出社時間が未入力で退勤時間が入力されている場合は無効にする。
   def finished_at_is_invalid_without_a_started_at

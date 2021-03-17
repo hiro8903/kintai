@@ -3,13 +3,19 @@
 <% provide(:button_text, '編集する') %>
 <h1><%= @page_title %></h1>
 
-
 <div class="search">
   <%= form_with url:'/users', method: :get, local: true do |f| %>
     <%= f.label :user_search, "ユーザー名検索", class: "label-search" %>
     <%= f.text_field :user_search, class: "form-search" %>
     <%= f.submit "検索", class: "btn-search btn-primary" %>
   <% end %>
+</div>
+
+<div>
+<%= form_tag import_users_path, multipart: true do %>
+  <%= file_field_tag :file %><br>
+  <%= submit_tag "CSVをインポート", class: 'btn btn-primary' %>
+<% end %> 
 </div>
 
 <div class="col-md-10 col-md-offset-1">
