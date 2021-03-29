@@ -1,6 +1,3 @@
-<% provide(:class_text, 'basic-info') %>
-<% provide(:button_text, '更新') %>
-
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
 
@@ -12,7 +9,7 @@
  <div class="modal-body">
       <%= form_with(url: user_over_time_request_path,local: true, method: :patch) do |f| %> 
         <% @requesters.each do |user| %>
-          <h3 class="center">【<%= user.name %>からの1ヵ月分勤怠申請】</h3>
+          <h3 class="center">【<%= user.name %>からの残業申請】</h3>
             <table class="table table-bordered center">
               <tr>
                 <td>日付</td>

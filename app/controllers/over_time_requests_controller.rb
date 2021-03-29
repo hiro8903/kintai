@@ -18,7 +18,6 @@ class OverTimeRequestsController < ApplicationController
     @over_time_request[:state] = "申請中"
      scheduled_end_time(@over_time_request,@attendance)
     if @over_time_request.save
-         
       flash[:success] = "#{User.find(@over_time_request.requested_id).name}に残業申請しました。"
       redirect_to user_url(@user, date: @over_time_request.end_scheduled_at.beginning_of_month)
     else
@@ -30,7 +29,7 @@ class OverTimeRequestsController < ApplicationController
   # 自分に対しての残業申請一覧ページを表示する。このページで申請された状態を確認し、それぞれに対して承認・否認等を選択。
   def edit
     @user = User.find(params[:user_id])
-    @all_requests = OverTimeRequest.where(requested: @user, state: "申請中")
+    @all_requests = OverTimeRequest.where(requested: @user, state: "申請中").order(attendance_id: :asc)
     @requesters = User.find(@all_requests.pluck(:requester_id).uniq)
   end
 
@@ -41,6 +40,7 @@ class OverTimeRequestsController < ApplicationController
         request = OverTimeRequest.find(id)
         if params[:over_time_requests][id][:check] == "1" # チェックボックスにチェックが入っているところのみ更新する。
           request.update_attributes!(item) 
+          request.delete if request[:state] == "なし" # 「なし」を選択したものは申請を削除する。
         end
       end
     end

@@ -30,67 +30,35 @@
 
       <tbody>
       <% @users.each do |user| %>
-      
-        <tr>
-   
-        
-  
-          <td><%= link_to user.name, user %>
-            <% if current_user.admin? && !current_user?(user) %><br> 
-              |<%= link_to "削除", user, method: :delete, 
-                      data: { confirm: "削除してよろしいですか？" },class: "btn btn-primary" %>
-              <div class="accordion" id="accordionUserEdit">
-                <div class="card">
-                  <div class="card-header" id="heading<%= user.id %>">
-                    <h5 class="mb-0">
-                      <button class="btn btn-lg btn-primary collapsed" type="button" data-toggle="collapse" data-target="#collapse<%= user.id %>" aria-expanded="false" aria-controls="collapse<%= user.id %>">
-                        編集
-                      </button>
-                    </h5>
-                  </div>
-                  <div id="collapse<%= user.id %>" class="collapse" aria-labelledby="heading<%= user.id %>" data-parent="#accordionUserEdit">
-                    <div class="card-body">
-                      <div class="row">
-                        <%= form_with(model: user, local: true, method: :patch) do |f| %>
-                          
-
-                          <%= f.label :name, class: "label-#{yield(:class_text)}" %>
-                          <%= f.text_field :name, class: "form-control" %>
-
-                          <%= f.label :email, class: "label-#{yield(:class_text)}" %>
-                          <%= f.email_field :email, class: "form-control" %>
-                          
-                          <%= f.label :affiliation, class: "label-#{yield(:class_text)}" %>
-                          <%= f.text_field :affiliation, class: "form-control" %>
-
-                          <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
-                          <%= f.text_field :employee_number, class: "form-control" %>
-
-                          <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
-                          <%= f.text_field :uid, class: "form-control" %>
-
-                          <%= f.label :password, class: "label-#{yield(:class_text)}" %>
-                          <%= f.password_field :password, class: "form-control" %>
-
-                          <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
-                          <%= f.password_field :password_confirmation, class: "form-control" %>
-
-                          <%= f.label :basic_work_time, class: "label-#{yield(:class_text)}" %>
-                          <%= f.time_field :basic_work_time, class: 'form-control' %>
-
-                          <%= f.label :work_time, class: "label-#{yield(:class_text)}" %>
-                          <%= f.time_field :work_time, class: 'form-control' %>
-
-                          <%= f.submit yield(:button_text), class: "btn btn-primary btn-block btn-#{yield(:class_text)}" %>
-                        <% end %>
+        <!-- 現在のユーザー以外を一覧表示する -->
+        <% unless user == current_user %>
+          <tr>
+            <td><%= link_to user.name, user %>
+              <% if current_user.admin? && !current_user?(user) %><br> 
+                |<%= link_to "削除", user, method: :delete, 
+                        data: { confirm: "削除してよろしいですか？" },class: "btn btn-primary" %>
+                <div class="accordion" id="accordionUserEdit">
+                  <div class="card">
+                    <div class="card-header" id="heading<%= user.id %>">
+                      <h5 class="mb-0">
+                        <button class="btn btn-lg btn-primary collapsed" type="button" data-toggle="collapse" data-target="#collapse<%= user.id %>" aria-expanded="false" aria-controls="collapse<%= user.id %>">
+                          編集
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapse<%= user.id %>" class="collapse" aria-labelledby="heading<%= user.id %>" data-parent="#accordionUserEdit">
+                      <div class="card-body">
+                        <div class="row">
+                          <%= render 'form_admin' , user: user %>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            <% end %> 
-          </td>
-        </tr>
+              <% end %> 
+            </td>
+          </tr>
+        <% end %>
       <% end %>
       </tbody>
     </table>

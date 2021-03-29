@@ -32,7 +32,7 @@
 </div>
 
 <div><!-- ユーザー情報テーブル・勤怠テーブル間の通知ボタンと勤怠編集ボタン -->
-  <% if current_user?(@user) %>
+  <% if current_user?(@user) && @user.superior? %>
     <!-- ひと月の勤怠申請の通知 -->
     <% if @monthly_requests.count == 0 %>
       【所属長承認申請のお知らせ】
@@ -56,6 +56,13 @@
     <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
     <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
   <% end %>
+  <% if current_user?(@user) && @user.superior? == false %>
+    <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
+    <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
+    <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
+    <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
+  <% end %>
+
 </div>
 
 <div><!-- 勤怠テーブル -->
@@ -162,23 +169,23 @@
               <% if over_time_request(day).state == "なし" %>
                 <!-- 表示なし -->
               <% elsif over_time_request(day).state == "申請中" %>
-                残業申請中
+                <%= over_time_request(day).requested.name %>に残業申請中
               <% elsif over_time_request(day).state == "承認" %>
-                残業承認済
+                <%= over_time_request(day).requested.name %>が残業承認済
               <% else over_time_request(day).state == "否認" %>
-                残業否認
+                <%= over_time_request(day).requested.name %>が残業否認
               <% end %>
             <% end %><br>
             <!-- 勤怠編集情報があればいずれかを表示 -->
             <% if attendance_edit_request(day).present? %>
               <% if attendance_edit_request(day).state == "なし" %>
-                <!-- 表示なし -->
+                <!-- 表示なし --><%= attendance_edit_request(day).state %>
               <% elsif attendance_edit_request(day).state == "申請中" %>
-                勤怠変更申請中<br>
+                 <%= attendance_edit_request(day).requested.name %>に勤怠変更申請中
               <% elsif attendance_edit_request(day).state == "承認" %>
-                勤怠変更承認済
+                <%= attendance_edit_request(day).requested.name %>が勤怠変更承認済
               <% else attendance_edit_request(day).state == "否認" %>
-                勤怠変更否認
+                <%= attendance_edit_request(day).requested.name %>が勤怠変更否認
               <% end %>
             <% end %><br>
           </td>
@@ -202,15 +209,15 @@
           <% elsif @monthly_request.state == "申請中" %>
             所属長承認：<%= @monthly_request.requested.name %>に申請中
           <% elsif @monthly_request.state == "承認" %>
-            所属長承認：<%= @monthly_request.requested.name %>から承認済
+            所属長承認：<%= @monthly_request.requested.name %>が承認済
           <% else @monthly_request.state == "否認" %>
-            所属長承認：<%= @monthly_request.requested.name %>から否認
+            所属長承認：<%= @monthly_request.requested.name %>が否認
           <% end %>
         </div>
         <div>
           <% if current_user?(@user) %>
             <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
-              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name %><br>
+              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %><br>
               <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
             <% end %> 
           <% end %>

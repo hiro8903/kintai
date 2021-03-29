@@ -16,8 +16,4 @@ module AttendanceEditRequestsHelper
     @edit_log_attendance.worked_on.year == year && @edit_log_attendance.worked_on.month == month
   end
 
-  # 
-  def repeat_times_count
-    @i = @i +1
-  end
 end

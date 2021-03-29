@@ -51,8 +51,13 @@ module SessionsHelper
   end
 
   # 記憶しているURL(またはデフォルトURL)にリダイレクトします。
+  # 管理者ユーザーの場合は記憶しているURL(またはユーザー一覧画面)にリダイレクトします。
   def redirect_back_or(default_url)
-    redirect_to(session[:forwarding_url] || default_url)
+    if current_user.admin?
+      redirect_to(session[:forwarding_url] || users_url)
+    else
+      redirect_to(session[:forwarding_url] || default_url)
+    end
     session.delete(:forwarding_url)
   end
 

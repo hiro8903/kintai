@@ -1,37 +1,29 @@
 class AttendanceEditRequestsController < ApplicationController
   protect_from_forgery with: :exception
-
   before_action :set_user_from_user_id, only: [:new, :index, :create, :edit, :edited_table] 
   before_action :logged_in_user, only: [:new, :create]
   before_action :admin_or_correct_user, only: [:new, :create]
+  before_action :not_admin_user, only: [:index, :edited_table]
   before_action :set_one_month, only: [:new, :create, :edit]
 
-  # 勤怠変種ページを表示
+  # 勤怠変更申請ページを表示
   def new
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
   end
 
+  # 勤怠変更申請（承認済み）一覧ページの表示
   def index
-    
     @attendance_edit_logs = @user.attendance_edit_requests.where(state: "承認")
-
-    # debugger
   end
 
-  # def edited_table
-  #   debugger
-  # end
-
+  # 勤怠変更申請（承認済み）一覧ページにおいて、セレクトフォームの年月を受け取る。
   def edited_table
     # indexページにある「data(入力フォーム)」のパラメーターを@textに代入
-
     @text = params[:data]
     @year = params["date"]["year"]
     @month = params["date"]["month"]
     @attendance_edit_logs = @user.attendance_edit_requests.where(state: "承認")
-
-    # debugger
   end
 
   # 勤怠の編集リクエストを一括登録。
@@ -83,16 +75,16 @@ class AttendanceEditRequestsController < ApplicationController
     @user = User.find(params[:user_id])
     @all_requests = AttendanceEditRequest.where(requested: @user, state: "申請中")
     @requesters = User.find(@all_requests.pluck(:requester_id).uniq)
-
   end
 
-  # チェックの入った残業申請のみ、申請状態を変更する（ 申請中から承認・否認等 )。
+  # チェックの入った勤怠変更申請のみ、申請状態を変更する（ 申請中から承認・否認等 )。
   def update
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendance_edit_requests_params.each do |id, item|
         request = AttendanceEditRequest.find(id)
         if params[:attendance_edit_requests][id][:check] == "1" # チェックボックスにチェックが入っているところのみ更新する。
           request.update_attributes!(item) 
+          request.delete if request.state == "なし"
         end
       end
     end
@@ -131,7 +123,16 @@ class AttendanceEditRequestsController < ApplicationController
       unless current_user?(@user) || current_user.admin?
         flash[:danger] = "権限がありません。"
         redirect_to(root_url)
-      end  
+      end
+    end
+
+    # 現在ログインしているユーザー(管理者権限者を除く）を許可します。
+    def not_admin_user
+      @user = User.find(params[:id]) if @user.blank?
+      if current_user.admin? == true 
+        flash[:danger] = "権限がありません。"
+        redirect_to(root_url)
+      end
     end
 
     # 終了予定時間を返す（指定勤務終了時間を申請日の年月日に合わせ、翌日チェックボックスのチェックの有無で終了予定時間の日付を当日にするか翌日にするか判断する）

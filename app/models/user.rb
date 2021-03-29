@@ -37,7 +37,7 @@ class User < ApplicationRecord
                     format: { with: VALID_EMAIL_REGEX }, # formatというオプション
                     uniqueness: true
   validates :affiliation, length: { in: 2..50 }, allow_blank: true
-  validates :employee_number, allow_blank: true, uniqueness: true
+  validates :employee_number, presence: true, uniqueness: true
   validates :uid, allow_blank: true, uniqueness: true
   validates :basic_work_time, presence: true
   validates :work_time, presence: true
@@ -89,7 +89,7 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, nil)
   end
 
-  # 選択されたファイルを読み込んでユーザー登録をする。
+  # 選択されたCSVファイルを読み込んでユーザー登録をする。
   def self.import(file)
     CSV.foreach(file.path, headers: true) do |row|
       user = find_by(id: row["id"]) || new
@@ -98,7 +98,7 @@ class User < ApplicationRecord
     end
   end
 
-  # インポートで登録する属性
+  # CSVファイルからユーザー情報をインポートする際に登録する属性
   def self.updatable_attributes
     ["id", 'name', 'email', 'password', 'admin', 'affiliation', 'basic_work_time', 'designated_work_start_time', 'designated_work_end_time', 'superior', 'employee_number', 'uid']
   end

@@ -37,8 +37,6 @@ class ApplicationController < ActionController::Base
 
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
   def set_one_month 
-    # debugger
-
     @first_day = params[:date].nil? ?
     Date.current.beginning_of_month : params[:date].to_date
 =begin
@@ -70,7 +68,6 @@ class ApplicationController < ActionController::Base
         @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
         # 一月分の申請を申請状態「なし」で作成する
         @monthly_request = MonthlyRequest.create!(requester_id: @user.id,requested_id: @user.id, request_month:@first_day, state:1)
-        # debugger
     end
   
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
@@ -84,6 +81,6 @@ class ApplicationController < ActionController::Base
     Date.current.beginning_of_week(:monday) : params[:date].to_date
     @last_day_of_week = @first_day_of_week.end_of_week(:monday)
     @attendances_of_week = @user.attendances.where(worked_on: @first_day_of_week..@last_day_of_week).order(:worked_on)
-
   end
+  
 end

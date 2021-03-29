@@ -2,9 +2,10 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :attending_index, :update, :destroy, :edit_basic_info, :update_basic_info, :show_one_week]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
   before_action :correct_user, only: [:edit]
-  before_action :admin_user, only: [:update, :destroy, :edit_basic_info, :update_basic_info, :index, :attending_index]
-  before_action :admin_or_correct_user, only: [:edit]
-  before_action :admin_or_correct_user_or_requesting_user, only:[:show]
+  before_action :admin_user, only: [:import, :attending_index, :destroy, :edit_basic_info, :update_basic_info, :index, :import, :attending_index, :attending_index]
+  before_action :admin_or_correct_user, only: [:edit, :update]
+  # before_action :admin_or_correct_user_or_requesting_user, only:[:show]
+  before_action :correct_user_or_requesting_user, only:[:show, :edit]
   before_action :set_one_month, only: [:show, :show_one_week]
   # before_action :rs, only: [:show]
   before_action :set_one_week , only: :show_one_week
@@ -83,16 +84,23 @@ class UsersController < ApplicationController
   end
 
   def new
-    users = User.all
-    # debugger
-    max_employee_number = users.select("employee_number").order("employee_number desc").last.employee_number
+    @user = User.new()
+    # users = User.all
+    # max_employee_number = users.select("employee_number").order("employee_number desc").last.employee_number
+    # max_employee_number = users.order("employee_number desc").last.employee_number
     # 社員番号の初期値に「すでに使用されている最大番号＋１」を入れておく。
-    @user = User.new(employee_number: max_employee_number + 1)
+    # @user = User.new(employee_number: max_employee_number + 1)
   end
 
   def create
-    debugger
+    # debugger
     @user = User.new(user_params)
+    # すべてのユーザーのうち、一番大きい社員番号より１大きい社員番号を登録する。
+    users = User.all
+    max_employee_number = users.order("employee_number desc").last.employee_number
+    @user[:employee_number] = max_employee_number + 1
+    # カードID（uid）の初期値として社員番号を登録する。
+    @user[:uid] = @user[:employee_number]
     if @user.save
       log_in @user # 保存成功後、ログインする。
       flash[:success] = '新規作成に成功しました。'
@@ -108,7 +116,11 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(user_params)
       flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to users_url
+      if current_user.admin?
+        redirect_to users_url 
+      else
+        redirect_to @user
+      end
     else
       if params[:user_search]
         @users = User.where('name LIKE ?', "%#{params[:user_search]}%").paginate(page: params[:page])
@@ -131,15 +143,15 @@ class UsersController < ApplicationController
   def edit_basic_info
   end
 
-  def update_basic_info
-    if @user.update_attributes(basic_info_params)
-      flash[:success] = "#{@user.name}の基本情報を更新しました。"
-      redirect_to @user and return
-    else
-      flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
-    end
-    redirect_to users_url and return
-  end
+  # def update_basic_info
+  #   if @user.update_attributes(basic_info_params)
+  #     flash[:success] = "#{@user.name}の基本情報を更新しました。"
+  #     redirect_to @user and return
+  #   else
+  #     flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
+  #   end
+  #   redirect_to users_url and return
+  # end
 
   private
 
@@ -169,6 +181,16 @@ class UsersController < ApplicationController
       end  
     end
 
+    # 現在ログインしているユーザー(管理者権限者を除く）、または申請先の上長を許可します。
+    def correct_user_or_requesting_user
+      @user = User.find(params[:id]) if @user.blank?
+      unless current_user.admin? == false && (current_user?(@user)|| @user.monthly_requesting.find_by(id:current_user) == current_user || @user.over_time_requesting.find_by(id:current_user) == current_user || @user.attendance_edit_requesting.find_by(id:current_user) == current_user)
+        flash[:danger] = "権限がありません。"
+        redirect_to(root_url)
+      end  
+    end
+
+    # ユーザーの一月分の勤怠情報をCSVファイルとして出力する。
     def send_attendances_csv(attendances)
       # CSV.generateとは、対象データを自動的にCSV形式に変換してくれるCSVライブラリの一種
       csv_data = CSV.generate do |csv|

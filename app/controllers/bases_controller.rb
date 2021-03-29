@@ -1,11 +1,13 @@
 class BasesController < ApplicationController
   before_action :admin_user, only: [:index, :create, :update, :destroy]
 
+  # 拠点一覧ページを表示
   def index
     @base = Base.new
     @bases = Base.all
   end
 
+  # 拠点情報追加
   def create
     @base = Base.new(base_params)
     @bases = Base.all
@@ -18,6 +20,7 @@ class BasesController < ApplicationController
     end
   end
 
+  # 拠点情報の編集
   def update
     @base = Base.find(params[:id])
     @bases = Base.all
@@ -30,6 +33,7 @@ class BasesController < ApplicationController
     end
   end
 
+  # 拠点情報を削除
   def destroy
     @base = Base.find(params[:id])
     @base.destroy

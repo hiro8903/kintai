@@ -5,13 +5,15 @@ class MonthlyRequestsController < ApplicationController
 
   def update # ひと月分の勤怠を申請する
     @monthly_request = MonthlyRequest.find_by(requester: @user, request_month: @first_day)
-    if @monthly_request.update_attributes(monthly_request_params)
-      @monthly_request.update_attributes(state: "申請中")
-      flash[:success] = "#{@monthly_request.requested.name}に#{@monthly_request.request_month}の申請をしました。"
-      debugger
-      redirect_to user_url(@user, date: @monthly_request.request_month)
-    else
-      render_to @user
+    unless @monthly_request.requested_id.blank?
+      if @monthly_request.update_attributes(monthly_request_params)
+        @monthly_request.update_attributes(state: "申請中")
+        flash[:success] = "#{@monthly_request.requested.name}に#{@monthly_request.request_month.year}年#{@monthly_request.request_month.month}月の申請をしました。"
+        redirect_to user_url(@user, date: @monthly_request.request_month)
+      else
+        flash[:danger] = "申請先の上長を選択してください。"
+        redirect_to user_url(@user, date: @monthly_request.request_month)
+      end
     end
   end
 
@@ -26,6 +28,7 @@ class MonthlyRequestsController < ApplicationController
       request = MonthlyRequest.find(id)
         if item[:check] == "1" # チェックボックスにチェックが入っているところのみ更新する。
           request.update_attributes!(item) 
+          request.requested_id = nil  if request.state == "なし"
         end
       end
     end
