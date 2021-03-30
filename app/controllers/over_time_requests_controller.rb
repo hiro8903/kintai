@@ -4,7 +4,8 @@ class OverTimeRequestsController < ApplicationController
   def new
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:format])
-    @over_time_request = @attendance.build_over_time_request(requester_id: @attendance.user_id)
+    @over_time_request = OverTimeRequest.find_by(attendance_id: @attendance.id).nil? ?
+    @attendance.build_over_time_request(requester_id: @attendance.user_id) : OverTimeRequest.find_by(attendance_id: @attendance.id)
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
   end
