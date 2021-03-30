@@ -1,7 +1,7 @@
 # coding: utf-8
 
-User.create!(name: "Sample User",
-  email: "sample@email.com",
+User.create!(name: "Admin User",
+  email: "admin@email.com",
   employee_number: "1",
   uid:"admin-1",
   password: "password",
