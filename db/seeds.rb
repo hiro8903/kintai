@@ -1,6 +1,6 @@
 # coding: utf-8
 
-User.create!(name: "Admin User",
+User.create!(name: "管理者",
   email: "admin@email.com",
   employee_number: "1",
   uid:"admin-1",
@@ -8,7 +8,7 @@ User.create!(name: "Admin User",
   password_confirmation: "password",
   admin: true)
 
-User.create!(name: "SuperiorA ",
+User.create!(name: "上長A ",
    email:"superior-a@email.com",
    employee_number: "2",
    uid:"sperior-1",
@@ -16,7 +16,7 @@ User.create!(name: "SuperiorA ",
    password_confirmation: "password",
    superior: true)
 
-User.create!(name: "SuperiorB ",
+User.create!(name: "上長B ",
    email:"superior-b@email.com",
    employee_number: "3",
    uid:"sperior-2",
