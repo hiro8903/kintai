@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210313152358) do
+ActiveRecord::Schema.define(version: 20210402131952) do
 
   create_table "attendance_edit_requests", force: :cascade do |t|
     t.integer "attendance_id"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20210313152358) do
     t.integer "state", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "tomorrow", default: 0
     t.index ["attendance_id"], name: "index_attendance_edit_requests_on_attendance_id"
     t.index ["requested_id"], name: "index_attendance_edit_requests_on_requested_id"
     t.index ["requester_id"], name: "index_attendance_edit_requests_on_requester_id"
@@ -51,7 +52,7 @@ ActiveRecord::Schema.define(version: 20210313152358) do
     t.integer "requester_id"
     t.integer "requested_id"
     t.date "request_month"
-    t.integer "state"
+    t.integer "state", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "check", default: 0
@@ -79,8 +80,8 @@ ActiveRecord::Schema.define(version: 20210313152358) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-12-02 23:00:00"
-    t.datetime "work_time", default: "2020-12-02 22:30:00"
+    t.datetime "basic_work_time", default: "2021-04-01 23:00:00"
+    t.datetime "work_time", default: "2021-04-01 22:30:00"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "remember_digest"

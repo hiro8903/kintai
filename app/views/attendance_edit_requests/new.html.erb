@@ -69,7 +69,7 @@
               <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, selected: attendance_edit_request(day).requested_id, include_blank: true %></td>
             <% else %>
               <!-- 未申請の場合、選択肢に空白が選択されている -->
-              <td><%= f.collection_select :requested_id, @superiors, :id, :name, include_blank: true %></td>
+              <td><%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %></td>
             <% end %>
           <% end %>
         </tr>

@@ -30,30 +30,52 @@ class AttendanceEditRequestsController < ApplicationController
   def create
     @superiors = User.where(superior: true)
     @superiors_other_then_myself = @superiors.where.not(id: @user.id)
+    @editing_count = 0
+    @delete_count = 0
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendance_edit_requests_params.each do |id, item|
         @attendance = Attendance.find(id)
-        if changes_present?(item) # 申請先ユーザー（上長）の他に変更内容も入力されているか確認する。 
-            # すでに申請されていて、状態が承認済みまたは否認の場合はそのままのインスタンスを保持する。（編集しても反映されない。ただし、上長の選択を外した場合は申請状態に限らず取り消し可能。）
-          if @attendance.attendance_edit_request.present? && (@attendance.attendance_edit_request.state == "承認" || @attendance.attendance_edit_request.state == "否認")
-            @attendance_edit_request = @attendance.attendance_edit_request
-          else # 状態なしまたは申請中の場合、新規作成する。（申請中の場合は上書きされる。）
-            @attendance_edit_request = @attendance.build_attendance_edit_request(item)
-            @attendance_edit_request[:requester_id] = @user.id
-            @attendance_edit_request[:state] = "申請中"
-            scheduled_end_time(@attendance_edit_request,@attendance) # 翌日チェックボックスのチェックｎ有無で終了日時を当日か翌日か判断する。
-            to_compensate(item) # 勤怠変更時に変更後の時刻の値が空白だった場合、変更前の出勤時間・退勤時間を入れる。
-            @attendance_edit_request.save!
-          end          
-        else # 指示者確認（申請先）が空白の場合は申請を取り消す。
-          @attendance_edit_request = @attendance.build_attendance_edit_request(item)
-          if @attendance_edit_request.present?
-            @attendance_edit_request.delete
+        # 今日までの日付だけ編集の確認をする。
+        if @attendance.worked_on <= Date.today
+          if changes_present?(item)# 申請先ユーザー（上長）と他に変更内容も入力されているか確認する。 
+            # 以前に申請している場合は、今回の決定時に内容に変化があるか確かめるため、初期値を@requestedにいれる。
+            if @attendance.attendance_edit_request.present?
+              @requested = {
+                "requested_id" => @attendance.attendance_edit_request.requested_id.to_s,
+                "started_at" => @attendance.attendance_edit_request[:started_at].strftime("%H:%M"),
+                "finished_at" => @attendance.attendance_edit_request[:finished_at].strftime("%H:%M"),
+                "note" => @attendance.attendance_edit_request.note,
+                "tomorrow" => @attendance.attendance_edit_request.tomorrow.to_s
+              }        
+            end
+            # 決定時に以前と変わりない値だった場合は申請を新規作成はしない。
+            if (@attendance.attendance_edit_request.present? && @requested == item)
+              @attendance_edit_request = @attendance.attendance_edit_request
+            else # 決定時に新しい申請内容があれば申請を新規作成する。
+              @attendance_edit_request = @attendance.build_attendance_edit_request(item)
+              @attendance_edit_request[:requester_id] = @user.id
+              @attendance_edit_request[:state] = "申請中"
+              scheduled_end_time(@attendance_edit_request,@attendance) # 翌日チェックボックスのチェックｎ有無で終了日時を当日か翌日か判断する。
+              to_compensate(item) # 勤怠変更時に変更後の時刻の値が空白だった場合、変更前の出勤時間・退勤時間を入れる。
+              @attendance_edit_request.save!
+              @editing_count += 1
+            end
+            @requested = nil
+          else # 指示者確認（申請先）が空白の場合は申請を取り消す。
+            if @attendance.attendance_edit_request.present?
+              @attendance.attendance_edit_request.delete
+              @delete_count += 1
+            end
           end
         end
       end
     end
-      flash[:success] = "1ヶ月分の勤怠編集を申請しました。"
+      # エラーは無いが変更も取消しもしなかった場合。
+      if @editing_count == 0 && @delete_count == 0
+        flash[:danger] = "変更がありません"
+      else
+        flash[:success] = "1ヶ月分の勤怠を編集しました。（申請：#{@editing_count}件、取消し：#{@delete_count}件）"
+      end
       # 勤怠変更申請した月の初日を取得
       day = @attendance.worked_on.beginning_of_month
       # 勤怠変更申請した月の勤怠編集編集画面に戻る
@@ -103,7 +125,7 @@ class AttendanceEditRequestsController < ApplicationController
   private
 
     def attendance_edit_requests_params
-      params.permit(attendance_edit_requests: [:attendance_id, :requested_id, :started_at, :finished_at, :note , :state, :updated_at])[:attendance_edit_requests]
+      params.permit(attendance_edit_requests: [:attendance_id, :requested_id, :started_at, :finished_at, :note , :state, :updated_at, :tomorrow])[:attendance_edit_requests]
     end
 
     # 申請先ユーザー（上長）の他に変更内容も入力されているか確認する。
