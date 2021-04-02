@@ -180,7 +180,6 @@
             <% end %><br>
             <!-- 勤怠編集情報があればいずれかを表示 -->
             <% if attendance_edit_request(day).present? %>
-              id:<%= attendance_edit_request(day).id %>
               <% if attendance_edit_request(day).state == "なし" %>
                 <!-- 表示なし --><%= attendance_edit_request(day).state %>
               <% elsif attendance_edit_request(day).state == "申請中" %>

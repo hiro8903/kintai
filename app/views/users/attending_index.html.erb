@@ -11,10 +11,12 @@
         </tr>
     </thead>
 
-    <% @today_attendances.each do |today_attendance| %>
+    <% @today_attendances_not_editing.each do |today_attendance| %>
       <tbody>
+      <% if today_attendance.attendance_edit_request.nil? %>
         <td><%= today_attendance.user.employee_number %></td>
         <td><%= today_attendance.user.name %></td>
+      <% end %>
       </tbody>
     <% end %>
   </table>

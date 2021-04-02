@@ -51,7 +51,9 @@ class UsersController < ApplicationController
   # 出勤中社員一覧ページを表示
   def attending_index
     today = Date.today
-    @today_attendances = Attendance.where(worked_on: today, finished_at: nil).where.not(started_at: nil)
+    @today_attendances_not_editing = Attendance.where(worked_on: today, finished_at: nil).where.not(started_at: nil)
+
+    # @today_attendances =@today_attendances_not_editing
   end
 
   def show
