@@ -3,9 +3,9 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
   before_action :correct_user, only: [:edit]
   before_action :admin_user, only: [:import, :attending_index, :destroy, :edit_basic_info, :update_basic_info, :index, :import, :attending_index, :attending_index]
-  before_action :admin_or_correct_user, only: [:edit, :update]
+  before_action :admin_or_correct_user, only: [:show, :edit, :update]
   # before_action :admin_or_correct_user_or_requesting_user, only:[:show]
-  before_action :correct_user_or_requesting_user, only:[:show, :edit]
+  before_action :correct_user_or_requesting_user, only:[:edit]
   before_action :set_one_month, only: [:show, :show_one_week]
   # before_action :rs, only: [:show]
   before_action :set_one_week , only: :show_one_week
@@ -214,7 +214,9 @@ class UsersController < ApplicationController
                               attendance.started_at,
                               attendance.finished_at,
                             ]
+
           end
+
           # csv << column_valueshは表の行に入る値を定義します。
           csv << column_values
         end

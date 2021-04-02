@@ -1,242 +1,267 @@
 <% provide(:title, @user.name) %>
   <!-- tr:Table Row	表の行  th:Table Header	表の見出しセル td:Table Data	表のデータセル	 -->
   <!--rowspan:縦結合、colspan：横結合-->
+<% if current_user.admin? %>
+  <div><!-- ユーザー情報テーブル -->
+    <h1>管理者ユーザー情報</h1>
+    <table class="table table-bordered table-condensed user-table">
+      <tr>
+        <td>名前</td>
+        <td><%= @user.name %></td>
+      </tr>
+      <tr>
+        <td>メールアドレス</td>
+        <td><%= @user.email %></td>
+      </tr>
+      <tr>
+        <td>社員番号</td>
+        <td><%= @user.employee_number %></td>
+      </tr>
+      <tr>
+        <td>カードID</td>
+        <td><%= @user.uid %></td>
+      </tr>
+    </table>
+  </div>
+<% end %>
 
-<div><!-- ユーザー情報テーブル -->
-  <% unless current_user?(@user) %>
-    <%= link_to "戻る", 'javascript:history.back()', class: "btn btn-lg btn-primary" %>
-  <% end %>
-  <table class="table table-bordered table-condensed user-table">
-    <tr>
-      <td><%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
-        <%= l(@first_day,format: :middle) %>
-        時間管理表
-        <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
+<% unless current_user.admin? %>
+  <div><!-- ユーザー情報テーブル -->
+    <% unless current_user?(@user) %>
+      <%= link_to "戻る", 'javascript:history.back()', class: "btn btn-lg btn-primary" %>
+    <% end %>
+    <table class="table table-bordered table-condensed user-table">
+      <tr>
+        <td><%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
+          <%= l(@first_day,format: :middle) %>
+          時間管理表
+          <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-xs btn-primary" if current_user?(@user)%>
+          </td>
+        <td>
+          指定勤務開始時間 <%= l(@user.designated_work_start_time, format: :time) %><br>
+          指定勤務終了時間 <%= l(@user.designated_work_end_time, format: :time) %>
         </td>
-      <td>
-        指定勤務開始時間 <%= l(@user.designated_work_start_time, format: :time) %><br>
-        指定勤務終了時間 <%= l(@user.designated_work_end_time, format: :time) %>
-      </td>
-      <td colspan="3">基本時間 <%= format_basic_info(@user.basic_work_time) %> </td>
-      <td>初日　<%= l(@first_day, format: :short) %></td>
-    </tr>
-    <tr>
-      <td>所属　<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
-      <td>名前　<%= @user.name %></td>
-      <td>コード</td>
-      <td></td><!-- 空白 -->
-      <td>出勤日数　<%= @worked_sum %>日</td>
-      <td>締め　<%= l(@last_day, format: :short) %></td>
-    </tr>
-  </table>
-</div>
-
-<div><!-- ユーザー情報テーブル・勤怠テーブル間の通知ボタンと勤怠編集ボタン -->
-  <% if current_user?(@user) && @user.superior? %>
-    <!-- ひと月の勤怠申請の通知 -->
-    <% if @monthly_requests.count == 0 %>
-      【所属長承認申請のお知らせ】
-    <% else %>
-      <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user, date: @first_day), remote: true, class: "with-notification" %>
-    <% end %><br>
-    <!-- 勤怠変更申請の通知 -->
-    <% if @attendance_edit_requests.count == 0 %>
-      【勤怠変更申請のお知らせ】
-    <% else %>
-      <%= link_to "【勤怠変更申請のお知らせ】#{@attendance_edit_requests.count}件の通知があります", edit_user_attendance_edit_request_path(@user), remote: true, class: "with-notification" %>
-    <% end %><br>
-    <!-- 残業申請の通知 -->
-    <%  if @over_time_requests.count == 0 %>
-      【残業申請のお知らせ】
-    <% else %>
-      <%= link_to "【残業申請のお知らせ】#{@over_time_requests.count}件の通知があります", edit_user_over_time_request_path(@user), remote: true, class: "with-notification" %>
-    <% end %><br>
-    <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
-    <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
-    <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
-    <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
-  <% end %>
-  <% if current_user?(@user) && @user.superior? == false %>
-    <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
-    <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
-    <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
-    <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
-  <% end %>
-
-</div>
-
-<div><!-- 勤怠テーブル -->
-  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
-
-    <thead>
-      <tr>
-        <th rowspan = "3">残業申請</th>
-        <th rowspan = "3">日付</th>
-        <th rowspan = "3">曜日</th>
-        <th colspan = "7">実績</th>
-        <th colspan = "5">所定外勤務</th>
+        <td colspan="3">基本時間 <%= format_basic_info(@user.basic_work_time) %> </td>
+        <td>初日　<%= l(@first_day, format: :short) %></td>
       </tr>
       <tr>
-        <th rowspan = "2">勤怠登録</th>
-        <th colspan = "2">出社</th>
-        <th colspan = "2">退社</th>
-        <th rowspan = "2">在社時間</th>
-        <th rowspan = "2">備考</th>
-        <th colspan = "2">終了予定時間</th>
-        <th rowspan = "2">時間外時間</th>
-        <th rowspan = "2">業務処理内容</th>
-        <th rowspan = "2">指示者確認㊞</th>
+        <td>所属　<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
+        <td>名前　<%= @user.name %></td>
+        <td>コード</td>
+        <td></td><!-- 空白 -->
+        <td>出勤日数　<%= @worked_sum %>日</td>
+        <td>締め　<%= l(@last_day, format: :short) %></td>
       </tr>
-      <tr>
-        <th>時</th>
-        <th>分</th>
-        <th>時</th>
-        <th>分</th>
-        <th>時</th>
-        <th>分</th>
-      </tr>
-    </thead>
+    </table>
+  </div>
 
-    <tbody>
-      <% @attendances.each do |day| %>
+  <div><!-- ユーザー情報テーブル・勤怠テーブル間の通知ボタンと勤怠編集ボタン -->
+    <% if current_user?(@user) && @user.superior? %>
+      <!-- ひと月の勤怠申請の通知 -->
+      <% if @monthly_requests.count == 0 %>
+        【所属長承認申請のお知らせ】
+      <% else %>
+        <%= link_to "【所属長承認申請のお知らせ】#{@monthly_requests.count}件の通知があります", edit_user_monthly_request_path(@user, date: @first_day), remote: true, class: "with-notification" %>
+      <% end %><br>
+      <!-- 勤怠変更申請の通知 -->
+      <% if @attendance_edit_requests.count == 0 %>
+        【勤怠変更申請のお知らせ】
+      <% else %>
+        <%= link_to "【勤怠変更申請のお知らせ】#{@attendance_edit_requests.count}件の通知があります", edit_user_attendance_edit_request_path(@user), remote: true, class: "with-notification" %>
+      <% end %><br>
+      <!-- 残業申請の通知 -->
+      <%  if @over_time_requests.count == 0 %>
+        【残業申請のお知らせ】
+      <% else %>
+        <%= link_to "【残業申請のお知らせ】#{@over_time_requests.count}件の通知があります", edit_user_over_time_request_path(@user), remote: true, class: "with-notification" %>
+      <% end %><br>
+      <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
+      <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
+      <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
+      <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
+    <% end %>
+    <% if current_user?(@user) && @user.superior? == false %>
+      <%= link_to "勤怠を編集", new_user_attendance_edit_request_path(@user, date: @first_day), class: "btn btn-primary" %>
+      <!--<!%= link_to "週間表示", user_show_one_week_path(current_user, date: @first_day_of_week), class: "btn btn-primary" %>-->
+      <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %><br>
+      <%= link_to "勤怠修正ログ（承認済）", user_attendance_edit_requests_path(@user), class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+
+  <div><!-- 勤怠テーブル -->
+    <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+
+      <thead>
         <tr>
-          <td><!-- 残業申請ボタン -->
-            <%= link_to "残業申請",new_user_over_time_request_path(@user, day), remote: true, class: "btn btn-primary"  if current_user?(@user) %>
-          </td>
-          <td><!-- 日付 月／日 -->
-            <%= l(day.worked_on, format: :short) %>
-          </td>
-          <td class="<%= "wday#{day.worked_on.wday}"%>"><!-- 曜日 -->
-            <%= $days_of_the_week[day.worked_on.wday] %>
-          </td>
-          <td><!-- 勤怠登録ボタン-->
-            <% if btn_text = attendance_state(day) %>
-              <% if attendance_edit_request(day).nil? %>
-                <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" if current_user?(@user)%>
+          <th rowspan = "3">残業申請</th>
+          <th rowspan = "3">日付</th>
+          <th rowspan = "3">曜日</th>
+          <th colspan = "7">実績</th>
+          <th colspan = "5">所定外勤務</th>
+        </tr>
+        <tr>
+          <th rowspan = "2">勤怠登録</th>
+          <th colspan = "2">出社</th>
+          <th colspan = "2">退社</th>
+          <th rowspan = "2">在社時間</th>
+          <th rowspan = "2">備考</th>
+          <th colspan = "2">終了予定時間</th>
+          <th rowspan = "2">時間外時間</th>
+          <th rowspan = "2">業務処理内容</th>
+          <th rowspan = "2">指示者確認㊞</th>
+        </tr>
+        <tr>
+          <th>時</th>
+          <th>分</th>
+          <th>時</th>
+          <th>分</th>
+          <th>時</th>
+          <th>分</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @attendances.each do |day| %>
+          <tr>
+            <td><!-- 残業申請ボタン -->
+              <%= link_to "残業申請",new_user_over_time_request_path(@user, day), remote: true, class: "btn btn-primary"  if current_user?(@user) %>
+            </td>
+            <td><!-- 日付 月／日 -->
+              <%= l(day.worked_on, format: :short) %>
+            </td>
+            <td class="<%= "wday#{day.worked_on.wday}"%>"><!-- 曜日 -->
+              <%= $days_of_the_week[day.worked_on.wday] %>
+            </td>
+            <td><!-- 勤怠登録ボタン-->
+              <% if btn_text = attendance_state(day) %>
+                <% if attendance_edit_request(day).nil? %>
+                  <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" if current_user?(@user)%>
+                <% end %>
               <% end %>
+            </td>
+            <td><!-- 出社ー時 -->
+            <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
+              <%= l(attendance_edit_request(day).started_at, format: :hour) %>
+            <% else %>
+              <%= l(day.started_at, format: :hour) if day.started_at.present? %>
             <% end %>
-          </td>
-          <td><!-- 出社ー時 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
-            <%= l(attendance_edit_request(day).started_at, format: :hour) %>
-          <% else %>
-            <%= l(day.started_at, format: :hour) if day.started_at.present? %>
-          <% end %>
-          </td>
-          <td><!-- 出社ー分 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
-            <%= every_15_minutes(attendance_edit_request(day).started_at) %>
-          <% else %>
-            <%= every_15_minutes(day.started_at) if day.started_at.present? %>
-          <% end %>
-          </td>
-          <td><!-- 退社ー時 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
-            <%= l(attendance_edit_request(day).finished_at, format: :hour) %>
-          <% else %>
-            <%= l(day.finished_at, format: :hour) if day.finished_at.present? %>
-          <% end %>
-          </td>
-          <td><!-- 退社ー分 -->
-          <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
-            <%= every_15_minutes(attendance_edit_request(day).finished_at) %>
-          <% else %>
-            <%= every_15_minutes(day.finished_at) if day.finished_at.present? %>
-          <% end %>
-          </td>
-          <td><!-- 在社時間 時間 -->
-              <%= str_times = working_time(day, attendance_edit_request(day)) %>
-              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
-          </td>
-          <td><!-- 備考 -->
-            <%= attendance_edit_request(day).note if attendance_edit_request(day).present? %>
-          </td>
-          <td><!-- 所定外勤務終了予定ー時 -->
-            <%= l(over_time_request(day).end_scheduled_at, format: :hour) if over_time_request(day).present? %> 
-          </td>
-          <td><!-- 所定外勤務終了予定ー分 -->
-             <%= every_15_minutes(over_time_request(day).end_scheduled_at) if over_time_request(day).present? %>
-          </td>
-          <td><!-- 時間外時間 時間 -->
-            <% if over_time_request(day).present? %>
-              <%= over_time(@user, day) %> 
+            </td>
+            <td><!-- 出社ー分 -->
+            <% if attendance_edit_request(day).present? && attendance_edit_request(day).started_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認")%>
+              <%= every_15_minutes(attendance_edit_request(day).started_at) %>
+            <% else %>
+              <%= every_15_minutes(day.started_at) if day.started_at.present? %>
             <% end %>
-          </td>
-          <td><!-- 業務処理内容 -->
-             <%= over_time_request(day).content if over_time_request(day).present? %>
-          </td>
-          <td><!-- 指示者確認㊞ 残業申請状態と勤怠編集申請状態を表示 -->
-            <!-- 残業情報があればいずれかを表示 -->
-            <% if over_time_request(day).present? %>
-              <% if over_time_request(day).state == "なし" %>
-                <!-- 表示なし -->
-              <% elsif over_time_request(day).state == "申請中" %>
-                <%= over_time_request(day).requested.name %>に残業申請中
-              <% elsif over_time_request(day).state == "承認" %>
-                <%= over_time_request(day).requested.name %>が残業承認済
-              <% else over_time_request(day).state == "否認" %>
-                <%= over_time_request(day).requested.name %>が残業否認
+            </td>
+            <td><!-- 退社ー時 -->
+            <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
+              <%= l(attendance_edit_request(day).finished_at, format: :hour) %>
+            <% else %>
+              <%= l(day.finished_at, format: :hour) if day.finished_at.present? %>
+            <% end %>
+            </td>
+            <td><!-- 退社ー分 -->
+            <% if attendance_edit_request(day).present? && attendance_edit_request(day).finished_at? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認") %>
+              <%= every_15_minutes(attendance_edit_request(day).finished_at) %>
+            <% else %>
+              <%= every_15_minutes(day.finished_at) if day.finished_at.present? %>
+            <% end %>
+            </td>
+            <td><!-- 在社時間 時間 -->
+                <%= str_times = working_time(day, attendance_edit_request(day)) %>
+                <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+            </td>
+            <td><!-- 備考 -->
+              <%= attendance_edit_request(day).note if attendance_edit_request(day).present? %>
+            </td>
+            <td><!-- 所定外勤務終了予定ー時 -->
+              <%= l(over_time_request(day).end_scheduled_at, format: :hour) if over_time_request(day).present? %> 
+            </td>
+            <td><!-- 所定外勤務終了予定ー分 -->
+              <%= every_15_minutes(over_time_request(day).end_scheduled_at) if over_time_request(day).present? %>
+            </td>
+            <td><!-- 時間外時間 時間 -->
+              <% if over_time_request(day).present? %>
+                <%= over_time(@user, day) %> 
               <% end %>
-            <% end %><br>
-            <!-- 勤怠編集情報があればいずれかを表示 -->
-            <% if attendance_edit_request(day).present? %>
-              <% if attendance_edit_request(day).state == "なし" %>
-                <!-- 表示なし --><%= attendance_edit_request(day).state %>
-              <% elsif attendance_edit_request(day).state == "申請中" %>
-                 <%= attendance_edit_request(day).requested.name %>に勤怠変更申請中
-              <% elsif attendance_edit_request(day).state == "承認" %>
-                <%= attendance_edit_request(day).requested.name %>が勤怠変更承認済
-              <% else attendance_edit_request(day).state == "否認" %>
-                <%= attendance_edit_request(day).requested.name %>が勤怠変更否認
-              <% end %>
-            <% end %><br>
-          </td>
-      <% end %>
-    </tbody>
+            </td>
+            <td><!-- 業務処理内容 -->
+              <%= over_time_request(day).content if over_time_request(day).present? %>
+            </td>
+            <td><!-- 指示者確認㊞ 残業申請状態と勤怠編集申請状態を表示 -->
+              <!-- 残業情報があればいずれかを表示 -->
+              <% if over_time_request(day).present? %>
+                <% if over_time_request(day).state == "なし" %>
+                  <!-- 表示なし -->
+                <% elsif over_time_request(day).state == "申請中" %>
+                  <%= over_time_request(day).requested.name %>に残業申請中
+                <% elsif over_time_request(day).state == "承認" %>
+                  <%= over_time_request(day).requested.name %>が残業承認済
+                <% else over_time_request(day).state == "否認" %>
+                  <%= over_time_request(day).requested.name %>が残業否認
+                <% end %>
+              <% end %><br>
+              <!-- 勤怠編集情報があればいずれかを表示 -->
+              <% if attendance_edit_request(day).present? %>
+                <% if attendance_edit_request(day).state == "なし" %>
+                  <!-- 表示なし --><%= attendance_edit_request(day).state %>
+                <% elsif attendance_edit_request(day).state == "申請中" %>
+                  <%= attendance_edit_request(day).requested.name %>に勤怠変更申請中
+                <% elsif attendance_edit_request(day).state == "承認" %>
+                  <%= attendance_edit_request(day).requested.name %>が勤怠変更承認済
+                <% else attendance_edit_request(day).state == "否認" %>
+                  <%= attendance_edit_request(day).requested.name %>が勤怠変更否認
+                <% end %>
+              <% end %><br>
+            </td>
+        <% end %>
+      </tbody>
 
-    <tfoot>
-      <td colspan = "1"><!-- 総合勤務時間 -->
-        <%= basic_work_times_sum(@user.basic_work_time, @worked_sum) %>
-      </td>
-      <td colspan = "2"><!-- 空白 --></td>
-      <td colspan="5"><!-- 合計在社時間 -->
-        <%= @total_working_times %>
-      </td>
-      <td colspan="1"><!-- 空白 --></td>
-      <td colspan="5"><!-- 空白 --></td>
-      <td colspan="1"><!-- 1ヶ月分の勤怠を上長へ申請 -->
-        <div>
-          <% if @monthly_request.state == "なし" %>
-            所属長承認：未
-          <% elsif @monthly_request.state == "申請中" %>
-            所属長承認：<%= @monthly_request.requested.name %>に申請中
-          <% elsif @monthly_request.state == "承認" %>
-            所属長承認：<%= @monthly_request.requested.name %>が承認済
-          <% else @monthly_request.state == "否認" %>
-            所属長承認：<%= @monthly_request.requested.name %>が否認
-          <% end %>
-        </div>
-        <div>
-          <% if current_user?(@user) %>
-            <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
-              <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %><br>
-              <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
-            <% end %> 
-          <% end %>
-        </div>
-      </td>
-    </tfoot>
+      <tfoot>
+        <td colspan = "1"><!-- 総合勤務時間 -->
+          <%= basic_work_times_sum(@user.basic_work_time, @worked_sum) %>
+        </td>
+        <td colspan = "2"><!-- 空白 --></td>
+        <td colspan="5"><!-- 合計在社時間 -->
+          <%= @total_working_times %>
+        </td>
+        <td colspan="1"><!-- 空白 --></td>
+        <td colspan="5"><!-- 空白 --></td>
+        <td colspan="1"><!-- 1ヶ月分の勤怠を上長へ申請 -->
+          <div>
+            <% if @monthly_request.state == "なし" %>
+              所属長承認：未
+            <% elsif @monthly_request.state == "申請中" %>
+              所属長承認：<%= @monthly_request.requested.name %>に申請中
+            <% elsif @monthly_request.state == "承認" %>
+              所属長承認：<%= @monthly_request.requested.name %>が承認済
+            <% else @monthly_request.state == "否認" %>
+              所属長承認：<%= @monthly_request.requested.name %>が否認
+            <% end %>
+          </div>
+          <div>
+            <% if current_user?(@user) %>
+              <%= form_with(model: @monthly_request, url: user_monthly_request_path(@monthly_request, date: @first_day), local: true, method: :patch) do |f| %>
+                <%= f.collection_select :requested_id, @superiors_other_then_myself, :id, :name, include_blank: true %><br>
+                <%= f.submit "申請", class: "btn btn-lg btn-primary" %>
+              <% end %> 
+            <% end %>
+          </div>
+        </td>
+      </tfoot>
 
-  </table>
-</div>
+    </table>
+  </div>
 
 
-<!-- モーダルウインドウ表示 -->
-  <!-- 申請されたひと月分の勤怠申請を確認する -->
-<div id="edit-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-  <!-- 残業申請をする -->
-<div id="over-time-request-new" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-  <!-- 申請された残業を確認する -->
-<div id="over-time-request-edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-  <!-- 申請された勤怠変更申請を確認する -->
-<div id="edit-attendance-edit-requests" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+  <!-- モーダルウインドウ表示 -->
+    <!-- 申請されたひと月分の勤怠申請を確認する -->
+  <div id="edit-monthly-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+    <!-- 残業申請をする -->
+  <div id="over-time-request-new" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+    <!-- 申請された残業を確認する -->
+  <div id="over-time-request-edit" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+    <!-- 申請された勤怠変更申請を確認する -->
+  <div id="edit-attendance-edit-requests" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<% end %>
