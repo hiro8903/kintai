@@ -221,7 +221,8 @@ class UsersController < ApplicationController
                               @started_at,
                               @finished_at
                             ]
-                          elsif attendance.present? && attendance.started_at.present? && attendance.finished_at.blank?
+          elsif attendance.present? && attendance.started_at.present?
+            @started_at = attendance.started_at.strftime("%H:%M") 
             column_values = [ @worked_on,
               @started_at,
               ""
