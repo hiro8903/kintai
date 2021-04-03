@@ -3,8 +3,8 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :show_one_week]
   before_action :correct_user, only: [:edit]
   before_action :admin_user, only: [:import, :attending_index, :destroy, :edit_basic_info, :update_basic_info, :index, :import, :attending_index, :attending_index]
-  before_action :admin_or_correct_user, only: [:show, :edit, :update]
-  # before_action :admin_or_correct_user_or_requesting_user, only:[:show]
+  before_action :admin_or_correct_user, only: [:edit, :update]
+  before_action :admin_or_correct_user_or_requesting_user, only:[:show]
   before_action :correct_user_or_requesting_user, only:[:edit]
   before_action :set_one_month, only: [:show, :show_one_week]
   # before_action :rs, only: [:show]
@@ -198,23 +198,39 @@ class UsersController < ApplicationController
       csv_data = CSV.generate do |csv|
         # %w()は、空白で区切って配列を返します
         # debugger
-        column_names = %w(日時 出社時間 退社時間)
+        column_names = %w(日付 出社時間 退社時間)
         # csv << column_namesは表の列に入る名前を定義します。
         csv << column_names
         # column_valuesに代入するカラム値を定義します。
         attendances.each do |attendance|
+          
+          @worked_on = attendance.worked_on.strftime("%m月%d日")
           # 勤怠編集申請が承認されていた場合は、CSVファイルに反映させる。
           if attendance.attendance_edit_request.present? && attendance.attendance_edit_request.state == "承認"
-            column_values = [ attendance.worked_on,
-                              attendance.attendance_edit_request.started_at,
-                              attendance.attendance_edit_request.finished_at,
+            @started_at = attendance.attendance_edit_request.started_at.strftime("%H:%M")   
+            @finished_at = attendance.attendance_edit_request.finished_at.strftime("%H:%M")   
+            column_values = [ @worked_on,
+                              @started_at,
+                              @finished_at
                             ]
-          else # 勤怠編集申請が無い、または勤怠編集申請が承認されていない場合は、初期値をCSVファイルに反映させる。
-            column_values = [ attendance.worked_on,
-                              attendance.started_at,
-                              attendance.finished_at,
+          # 勤怠編集申請が無い、または勤怠編集申請が承認されていない場合は、初期値をCSVファイルに反映させる。
+          elsif attendance.present? && attendance.started_at.present? && attendance.finished_at.present?
+            @started_at = attendance.started_at.strftime("%H:%M")   
+            @finished_at = attendance.finished_at.strftime("%H:%M")   
+            column_values = [ @worked_on,
+                              @started_at,
+                              @finished_at
                             ]
-
+                          elsif attendance.present? && attendance.started_at.present? && attendance.finished_at.blank?
+            column_values = [ @worked_on,
+              @started_at,
+              ""
+            ]
+          elsif attendance.present? && attendance.started_at.blank? && attendance.finished_at.blank?
+            column_values = [ @worked_on,
+              "",
+              ""
+            ]
           end
 
           # csv << column_valueshは表の行に入る値を定義します。
