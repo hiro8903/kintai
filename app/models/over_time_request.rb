@@ -9,7 +9,7 @@ class OverTimeRequest < ApplicationRecord
     validates :end_scheduled_at
   end
   validates :content,length: { maximum: 50 }
-  validate :designated_work_end_time_than_end_scheduled_at_fast_if_invalid
+  # validate :designated_work_end_time_than_end_scheduled_at_fast_if_invalid
 
   def designated_work_end_time_than_end_scheduled_at_fast_if_invalid
     if end_scheduled_at.present? 
