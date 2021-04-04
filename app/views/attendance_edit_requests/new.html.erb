@@ -62,7 +62,13 @@
               <%= str_times = request_working_time(day, attendance_edit_request(day)) %>
             </td>
             <!-- 備考 -->
-            <td><%= f.text_field :note, class: "form-control" %></td>
+            <% if attendance_edit_request(day).present? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認" || attendance_edit_request(day).state == "否認") %>
+              <!-- すでに申請されている場合、選択肢に上長の名前が入力されている -->
+              <td><%= f.text_field :note, value: attendance_edit_request(day).note, class: "form-control" %></td>
+            <% else %>
+              <!-- 未申請の場合、選択肢に空白が選択されている -->
+              <td><%= f.text_field :note, class: "form-control" %></td>
+            <% end %>
             <!-- 指示者確認 -->
             <% if attendance_edit_request(day).present? && (attendance_edit_request(day).state == "申請中" || attendance_edit_request(day).state == "承認" || attendance_edit_request(day).state == "否認") %>
               <!-- すでに申請されている場合、選択肢に上長の名前が入力されている -->
